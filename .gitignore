@@ -1,0 +1,52 @@
+# 🛠️ Gradle 빌드 파일 제외
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# 🚀 실행 파일 및 불필요한 빌드 파일 제외
+bin/
+out/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+# 🔧 IntelliJ IDEA 설정 파일 제외
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# 🛠️ STS(Spring Tool Suite) 설정 파일 제외
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans/
+.sts4-cache/
+
+# 🎯 VS Code 설정 파일 제외
+.vscode/
+
+# 🔥 NetBeans 관련 파일 제외
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# 🛑 환경 설정 파일 (민감한 정보 보호) 제외
+application*.yml
+application*.properties
+
+# 📦 로그 파일 제외
+*.log
+logs/
+log/
+trace.log
+hs_err_pid*
+
+# 🌍 OS별 불필요한 파일 제외
+.DS_Store
+Thumbs.db
