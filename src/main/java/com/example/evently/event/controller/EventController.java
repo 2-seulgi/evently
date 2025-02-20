@@ -6,12 +6,15 @@ import com.example.evently.event.service.EventService;
 import com.example.evently.global.dto.SuccessResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequestMapping("/events")
@@ -28,20 +31,21 @@ public class EventController {
 
     // 이벤트 리스트 조회
     @GetMapping
-    public ResponseEntity<List<EventResponseDto>> getAllEvents() {
-        return ResponseEntity.status(HttpStatus.OK).body(eventService.getAllEvents());
-    }
-
-    // 검색 조건에 따른 이벤트 리스트 조회
-    @GetMapping("/search")
-    public ResponseEntity<List<EventResponseDto>> searchEvents(
+    public ResponseEntity<Page<EventResponseDto>> getEvents(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) LocalDateTime startDate,
             @RequestParam(required = false) LocalDateTime endDate,
-            @RequestParam(required = false) Integer minPoint
+            @RequestParam(required = false) Integer minPoint,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "startDate") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
     ) {
-        List<EventResponseDto> events = eventService.searchEvents(title, startDate, endDate, minPoint);
-        return ResponseEntity.ok(events);
+        Pageable pageable = PageRequest.of(page,size, Sort.by(
+                direction.equalsIgnoreCase("desc")? Sort.Direction.DESC : Sort.Direction.ASC,
+                sortBy
+        ));
+        return ResponseEntity.ok(eventService.getEvents(title, startDate, endDate, minPoint, pageable));
 
     }
 

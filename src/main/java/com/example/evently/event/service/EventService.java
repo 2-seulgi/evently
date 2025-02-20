@@ -7,6 +7,8 @@ import com.example.evently.event.dto.EventResponseDto;
 import com.example.evently.event.repository.EventRepository;
 import com.querydsl.core.BooleanBuilder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,28 +36,19 @@ public class EventService {
         return EventResponseDto.fromEntity(savedEvent);
     }
 
-    // 이벤트 목록 조회
+    // 이벤트  조회
     @Transactional(readOnly = true)
-    public List<EventResponseDto> getAllEvents(){
-        return eventRepository.findAllByIsDeletedFalse().stream().map(EventResponseDto::fromEntity).collect(Collectors.toList());
-
-    }
-
-    // 이벤트 조건 조회
-    @Transactional(readOnly = true)
-    public List<EventResponseDto> searchEvents(String title, LocalDateTime startDate, LocalDateTime endDate, Integer minPoint) {
+    public Page<EventResponseDto> getEvents(String title, LocalDateTime startDate, LocalDateTime endDate, Integer minPoint, Pageable pageable) {
         BooleanBuilder builder = buildSearchPredicate(title, startDate, endDate, minPoint);
-        
-        // 삭제 여부 조건 추가
+
+        buildSearchPredicate(title,startDate,endDate,minPoint);
+
+        //  Soft Delete된 이벤트는 제외
         builder.and(QEvent.event.isDeleted.eq(false));
 
-        // 필터링된 데이터 조회
-        List<Event> events = eventRepository.findAll(builder);
-
-        // DTO 변환
-        return events.stream()
-                .map(EventResponseDto::fromEntity)
-                .collect(Collectors.toList());
+        //  검색 조건이 없으면 전체 리스트 반환, 있으면 필터링된 결과 반환
+        return eventRepository.findAll(builder, pageable)
+                .map(EventResponseDto::fromEntity);
     }
 
     /**

@@ -1,10 +1,9 @@
 package com.example.evently.event.repository;
 
 import com.example.evently.event.domain.Event;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
-import java.util.List;
-
-public interface EventRepository extends JpaRepository<Event, Long>, EventRepositoryCustom {
-    List<Event> findAllByIsDeletedFalse(); //
+public interface EventRepository extends JpaRepository<Event, Long>, QuerydslPredicateExecutor<Event> {
 }
