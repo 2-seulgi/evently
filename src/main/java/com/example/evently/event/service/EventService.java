@@ -13,8 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +27,8 @@ public class EventService {
                 requestDto.description(),
                 requestDto.startDate(),
                 requestDto.endDate(),
-                requestDto.pointReward()
+                requestDto.pointReward(),
+                requestDto.eventType()
         );
 
         Event savedEvent = eventRepository.save(event);

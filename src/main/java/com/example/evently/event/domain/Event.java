@@ -1,5 +1,6 @@
 package com.example.evently.event.domain;
 
+import com.example.evently.event.domain.enums.EventType;
 import com.example.evently.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,9 +25,13 @@ public class Event extends BaseEntity {
     private LocalDateTime endDate;
     @Column(nullable = false)
     private int pointReward;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private EventType eventType;
+
 
     private Event(String title, String description, LocalDateTime startDate,
-                  LocalDateTime endDate, int pointReward) {
+                  LocalDateTime endDate, int pointReward, EventType eventType) {
         validateEventDates(startDate, endDate);
         validatePointReward(pointReward);
         this.title = title;
@@ -34,12 +39,13 @@ public class Event extends BaseEntity {
         this.startDate = startDate;
         this.endDate = endDate;
         this.pointReward = pointReward;
+        this.eventType = eventType;
     }
 
     // 팩토리 메소드 추가
     public static Event of(String title, String description, LocalDateTime startDate,
-                           LocalDateTime endDate, int pointReward) {
-        return new Event(title, description, startDate, endDate, pointReward);
+                           LocalDateTime endDate, int pointReward, EventType eventType) {
+        return new Event(title, description, startDate, endDate, pointReward, eventType);
     }
 
     // 이벤트 수정

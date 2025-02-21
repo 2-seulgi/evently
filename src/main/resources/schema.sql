@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS event (
         end_date TIMESTAMP NOT NULL,
         point_reward INT NOT NULL,
         is_deleted BOOLEAN NOT NULL,
+        event_type VARCHAR(20) NOT NULL,
         reg_date TIMESTAMP NOT NULL,
         chg_date TIMESTAMP NOT NULL
     );
