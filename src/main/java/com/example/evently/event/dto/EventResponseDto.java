@@ -11,8 +11,12 @@ public record EventResponseDto(
         LocalDateTime startDate,
         LocalDateTime endDate,
         int pointReward,
-        boolean isDeleted
-) {
+        boolean isDeleted,
+        LocalDateTime regDate,
+        LocalDateTime chgDate
+
+        ) {
+
     public static EventResponseDto fromEntity(Event event) {
         return new EventResponseDto(
                 event.getId(),
@@ -21,7 +25,9 @@ public record EventResponseDto(
                 event.getStartDate(),
                 event.getEndDate(),
                 event.getPointReward(),
-                event.isDeleted()
+                event.isDeleted(),
+                event.getRegDate(),
+                event.getChgDate()
         );
     }
 }

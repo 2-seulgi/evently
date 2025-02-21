@@ -1,6 +1,6 @@
 package com.example.evently.event.domain;
 
-import com.example.evently.event.dto.EventRequestDto;
+import com.example.evently.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Table(name = "event")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Event {
+public class Event extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,10 +24,7 @@ public class Event {
     private LocalDateTime endDate;
     @Column(nullable = false)
     private int pointReward;
-    @Column(nullable = false)
-    private boolean isDeleted = false;
 
-    @Builder
     private Event(String title, String description, LocalDateTime startDate,
                   LocalDateTime endDate, int pointReward) {
         validateEventDates(startDate, endDate);
@@ -36,7 +33,13 @@ public class Event {
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.pointReward = pointReward ;
+        this.pointReward = pointReward;
+    }
+
+    // 팩토리 메소드 추가
+    public static Event of(String title, String description, LocalDateTime startDate,
+                           LocalDateTime endDate, int pointReward) {
+        return new Event(title, description, startDate, endDate, pointReward);
     }
 
     // 이벤트 수정
@@ -49,11 +52,6 @@ public class Event {
         this.startDate = startDate;
         this.endDate = endDate;
         this.pointReward = pointReward ;
-    }
-
-    // 이벤트 삭제
-    public void softDelete() {
-        this.isDeleted = true;
     }
 
     // 이벤트 날짜 유효성 검증

@@ -24,13 +24,13 @@ public class EventService {
     // 이벤트 생성
     @Transactional
     public EventResponseDto createEvent(EventRequestDto requestDto) {
-        Event event = Event.builder()
-                .title(requestDto.title())
-                .description(requestDto.description())
-                .startDate(requestDto.startDate())
-                .endDate(requestDto.endDate())
-                .pointReward(requestDto.pointReward())
-                .build();
+        Event event = Event.of(
+                requestDto.title(),
+                requestDto.description(),
+                requestDto.startDate(),
+                requestDto.endDate(),
+                requestDto.pointReward()
+        );
 
         Event savedEvent = eventRepository.save(event);
         return EventResponseDto.fromEntity(savedEvent);

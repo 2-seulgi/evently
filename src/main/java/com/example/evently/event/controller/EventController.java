@@ -38,8 +38,8 @@ public class EventController {
             @RequestParam(required = false) Integer minPoint,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "startDate") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction
+            @RequestParam(defaultValue = "id") String sortBy, // 기본값: 등록일(=id 기준)
+            @RequestParam(defaultValue = "desc") String direction
     ) {
         Pageable pageable = PageRequest.of(page,size, Sort.by(
                 direction.equalsIgnoreCase("desc")? Sort.Direction.DESC : Sort.Direction.ASC,
