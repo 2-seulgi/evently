@@ -5,6 +5,9 @@ import com.example.evently.event.domain.QEvent;
 import com.example.evently.event.dto.EventRequestDto;
 import com.example.evently.event.dto.EventResponseDto;
 import com.example.evently.event.repository.EventRepository;
+
+import com.example.evently.global.exception.ExceptionType;
+import com.example.evently.global.exception.GlobalException;
 import com.querydsl.core.BooleanBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +25,11 @@ public class EventService {
     // 이벤트 생성
     @Transactional
     public EventResponseDto createEvent(EventRequestDto requestDto) {
+
+        if (requestDto.endDate().isBefore(requestDto.startDate())) {
+            throw new GlobalException(ExceptionType.INVALID_DATE_RANGE);
+        }
+
         Event event = Event.of(
                 requestDto.title(),
                 requestDto.description(),

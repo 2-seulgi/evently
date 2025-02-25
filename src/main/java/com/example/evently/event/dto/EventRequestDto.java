@@ -19,10 +19,5 @@ public record EventRequestDto (
         @Min(value = 0, message = "포인트는 0 이상이어야 합니다.") int pointReward,
         @NotNull(message = "이벤트 유형은 필수입니다.") EventType eventType
 ){
-        public EventRequestDto {
 
-                if (endDate.isBefore(startDate)) {
-                        throw new GlobalException(ExceptionType.INVALID_DATE_RANGE); // ✅ GlobalException으로 변경
-                }
-        }
 }
