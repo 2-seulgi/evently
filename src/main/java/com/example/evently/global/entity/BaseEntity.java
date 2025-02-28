@@ -23,11 +23,5 @@ public abstract class BaseEntity {
     @Column(nullable = false)
     private LocalDateTime chgDate; //  수정일 (업데이트 시 자동 변경)
 
-    @Column(nullable = false)
-    private boolean isDeleted = false; //  삭제 여부 (Soft Delete)
 
-    // Soft Delete 처리 메소드 추가
-    public void softDelete() {
-        this.isDeleted = true;
-    }
 }

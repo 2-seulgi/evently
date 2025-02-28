@@ -17,7 +17,14 @@ CREATE TABLE IF NOT EXISTS users (
     user_name VARCHAR(100) NOT NULL,
     password VARCHAR(100) NOT NULL,
     points INT NOT NULL DEFAULT 0,
-    is_deleted BOOLEAN NOT NULL DEFAULT FALSE, -- ✅ 추가
     reg_date TIMESTAMP NOT NULL ,
     chg_date TIMESTAMP NOT NULL
     );
+
+CREATE TABLE IF NOT EXISTS event_participation  (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_sn BIGINT,
+    event_id BIGINT,
+    reg_date TIMESTAMP NOT NULL ,
+    chg_date TIMESTAMP NOT NULL
+);

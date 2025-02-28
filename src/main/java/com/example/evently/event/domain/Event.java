@@ -28,6 +28,8 @@ public class Event extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private EventType eventType;
+    @Column(nullable = false)
+    private boolean isDeleted = false; //  삭제 여부 (Soft Delete)
 
     /** 객체 생성을 직접 제어 하기 위해 생성자 + 팩토리 메소드 사용( 유효성 검증 포함) **/
     // 생성자
@@ -78,5 +80,9 @@ public class Event extends BaseEntity {
         }
     }
 
+    // Soft Delete 처리 메소드 추가
+    public void softDelete() {
+        this.isDeleted = true;
+    }
 
 }

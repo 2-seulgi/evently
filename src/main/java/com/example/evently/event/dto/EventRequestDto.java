@@ -1,8 +1,6 @@
 package com.example.evently.event.dto;
 
 import com.example.evently.event.domain.enums.EventType;
-import com.example.evently.global.exception.ExceptionType;
-import com.example.evently.global.exception.GlobalException;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
