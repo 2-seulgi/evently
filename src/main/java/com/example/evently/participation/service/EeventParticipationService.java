@@ -42,6 +42,7 @@ public class EeventParticipationService {
 
         // 포인트 지급
         user.addPoints(event.getPointReward());
+        userRepository.save(user); // 포인트 저장
     }
 
 }
