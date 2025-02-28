@@ -10,3 +10,14 @@ CREATE TABLE IF NOT EXISTS event (
         reg_date TIMESTAMP NOT NULL,
         chg_date TIMESTAMP NOT NULL
     );
+
+CREATE TABLE IF NOT EXISTS users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id VARCHAR(100) NOT NULL UNIQUE,
+    user_name VARCHAR(100) NOT NULL,
+    password VARCHAR(100) NOT NULL,
+    points INT NOT NULL DEFAULT 0,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE, -- ✅ 추가
+    reg_date TIMESTAMP NOT NULL ,
+    chg_date TIMESTAMP NOT NULL
+    );

@@ -29,7 +29,8 @@ public class Event extends BaseEntity {
     @Column(nullable = false, length = 20)
     private EventType eventType;
 
-
+    /** 객체 생성을 직접 제어 하기 위해 생성자 + 팩토리 메소드 사용( 유효성 검증 포함) **/
+    // 생성자
     private Event(String title, String description, LocalDateTime startDate,
                   LocalDateTime endDate, int pointReward, EventType eventType) {
         validateEventDates(startDate, endDate);
