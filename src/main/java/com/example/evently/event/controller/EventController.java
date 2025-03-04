@@ -41,6 +41,12 @@ public class EventController {
             @RequestParam(defaultValue = "id") String sortBy, // 기본값: 등록일(=id 기준)
             @RequestParam(defaultValue = "desc") String direction
     ) {
+        /**
+         * 페이지네이션 객체 생성
+         * page: 현재 페이지 번호
+         * size : 한 페이지당 데이터 개수
+         * 정렬 필드와 방향을 동적으로 설정
+         */
         Pageable pageable = PageRequest.of(page,size, Sort.by(
                 direction.equalsIgnoreCase("desc")? Sort.Direction.DESC : Sort.Direction.ASC,
                 sortBy
