@@ -17,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class EeventParticipationService {
@@ -52,9 +54,9 @@ public class EeventParticipationService {
         userRepository.save(user); // 포인트 저장
     }
 
-    public Page<EventParticipationResponseDto> getUserParticipationHistory(Long userSn, int page, int size) {
+    public Page<EventParticipationResponseDto> getUserParticipationHistory(Long userSn, String eventName, LocalDateTime startDate, LocalDateTime endDate, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "regDate")); //페이지 번호를 0부터 시작하도록 변환 (Spring Data JPA는 0-based index 사용)
-        return eventParticipationQueryRepository.findUserParticipationHistory(userSn, pageable);
+        return eventParticipationQueryRepository.findUserParticipationHistory(userSn, eventName, startDate, endDate, pageable);
     }
 
 
