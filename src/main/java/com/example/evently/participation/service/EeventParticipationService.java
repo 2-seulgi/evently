@@ -3,6 +3,7 @@ package com.example.evently.participation.service;
 import com.example.evently.event.domain.Event;
 import com.example.evently.event.repository.EventRepository;
 import com.example.evently.participation.domain.EventParticipation;
+import com.example.evently.participation.dto.EventParticipantResponseDto;
 import com.example.evently.participation.dto.EventParticipationRequestDto;
 import com.example.evently.participation.dto.EventParticipationResponseDto;
 import com.example.evently.participation.repository.EventParticipationQueryRepository;
@@ -27,6 +28,11 @@ public class EeventParticipationService {
     private final EventParticipationRepository eventParticipationRepository;
     private final EventParticipationQueryRepository eventParticipationQueryRepository;
 
+
+    /**
+     * 이벤트 참가
+     * @param eventParticipationRequestDto
+     */
     @Transactional
     public void participateEvent(EventParticipationRequestDto  eventParticipationRequestDto) {
         // 사용자 조회
@@ -54,9 +60,24 @@ public class EeventParticipationService {
         userRepository.save(user); // 포인트 저장
     }
 
+    /**
+     * 사용자의 참석 이벤트 조회
+     * @param userSn
+     * @param eventName
+     * @param startDate
+     * @param endDate
+     * @param page
+     * @param size
+     * @return
+     */
     public Page<EventParticipationResponseDto> getUserParticipationHistory(Long userSn, String eventName, LocalDateTime startDate, LocalDateTime endDate, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "regDate")); //페이지 번호를 0부터 시작하도록 변환 (Spring Data JPA는 0-based index 사용)
         return eventParticipationQueryRepository.findUserParticipationHistory(userSn, eventName, startDate, endDate, pageable);
+    }
+
+    public Page<EventParticipantResponseDto> getParticipantsByEvent(Long eventId, String userName, int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "regDate"));
+        return eventParticipationQueryRepository.findParticipantsByEventId(eventId, userName, pageable);
     }
 
 

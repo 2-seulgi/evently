@@ -2,6 +2,7 @@ package com.example.evently.participation.repository;
 
 import com.example.evently.event.domain.QEvent;
 import com.example.evently.participation.domain.QEventParticipation;
+import com.example.evently.participation.dto.EventParticipantResponseDto;
 import com.example.evently.participation.dto.EventParticipationResponseDto;
 import com.example.evently.user.domain.QUser;
 import com.querydsl.core.BooleanBuilder;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -63,5 +63,42 @@ public class EventParticipationQueryRepository {
                 .fetchOne()).orElse(0L); // NullPointerException 방지
 
         return new PageImpl<>(results, pageable, total);
+    }
+
+    public Page<EventParticipantResponseDto> findParticipantsByEventId(Long eventId, String userName, Pageable pageable) {
+        QEventParticipation eventParticipation = QEventParticipation.eventParticipation;
+        QUser user = QUser.user; // 유저 엔티티 추가
+
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(eventParticipation.event.id.eq(eventId));// 특정 이벤트에 대한 참여자 조회
+
+        // 검색조건
+        if (userName != null && !userName.isBlank()) {
+            builder.and(user.userName.containsIgnoreCase(userName));
+        }
+
+        // Query 실행
+        List<EventParticipantResponseDto> results = queryFactory
+                .select(Projections.constructor(EventParticipantResponseDto.class,
+                        user.id,
+                        user.userName,
+                        eventParticipation.regDate
+                        ))
+                .from(eventParticipation)
+                .join(user).on(eventParticipation.user.eq(user))
+                .where(builder)
+                .orderBy(eventParticipation.regDate.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        long total = Optional.ofNullable(queryFactory
+                .select(eventParticipation.count())
+                .from(eventParticipation)
+                .where(builder)
+                .fetchOne()).orElse(0L); // NullPointerException 방지
+
+        return new PageImpl<>(results, pageable, total);
+
     }
 }
