@@ -46,6 +46,13 @@ dependencies {
 
     // ✅ H2 Database 추가
     implementation 'com.h2database:h2'
+
+    // Spring Boot Redis Starter (필수)
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    // Redisson (분산 락 활용)
+    implementation 'org.redisson:redisson-spring-boot-starter:3.22.0'
+    // JSON 직렬화를 위한 Jackson (Redis 캐싱에 필요)
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
 }
 
 tasks.withType(JavaCompile).configureEach {
