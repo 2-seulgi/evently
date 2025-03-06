@@ -8,6 +8,7 @@ import com.example.evently.participation.dto.EventParticipationRequestDto;
 import com.example.evently.participation.dto.EventParticipationResponseDto;
 import com.example.evently.participation.repository.EventParticipationQueryRepository;
 import com.example.evently.participation.repository.EventParticipationRepository;
+import com.example.evently.point.service.PointService;
 import com.example.evently.user.domain.User;
 import com.example.evently.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -22,12 +23,12 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class EeventParticipationService {
+public class EventParticipationService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
+    private final PointService pointService;
     private final EventParticipationRepository eventParticipationRepository;
     private final EventParticipationQueryRepository eventParticipationQueryRepository;
-
 
     /**
      * 이벤트 참가
@@ -56,8 +57,7 @@ public class EeventParticipationService {
         eventParticipationRepository.save(eventParticipation);
 
         // 포인트 지급
-        user.addPoints(event.getPointReward());
-        userRepository.save(user); // 포인트 저장
+        pointService.earnPoints(user, event.getPointReward(), "이벤트 참여: " + event.getTitle());
     }
 
     /**

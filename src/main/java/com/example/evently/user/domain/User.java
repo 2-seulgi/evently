@@ -36,8 +36,9 @@ public class User extends BaseEntity {
         return new User(userId, userName, password);
     }
 
-    // 포인트 추가 로직
-    public void addPoints(int points) {
-        this.points += points;
+    // 포인트 업데이트
+    public void updatePoints(int points)
+    {
+        this.points = points;
     }
 }

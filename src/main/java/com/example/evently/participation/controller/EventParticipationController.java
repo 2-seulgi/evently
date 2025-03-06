@@ -1,9 +1,10 @@
-package com.example.evently.participation.contorller;
+package com.example.evently.participation.controller;
 
 import com.example.evently.participation.dto.EventParticipantResponseDto;
 import com.example.evently.participation.dto.EventParticipationRequestDto;
 import com.example.evently.participation.dto.EventParticipationResponseDto;
-import com.example.evently.participation.service.EeventParticipationService;
+import com.example.evently.participation.service.EventParticipationService;
+import com.example.evently.point.service.PointService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 @RequestMapping("/event-participation")
 @RequiredArgsConstructor
 public class EventParticipationController {
-    private final EeventParticipationService eventParticipationService;
+    private final EventParticipationService eventParticipationService;
 
     /**
      * 사용자 > 이벤트 참여
