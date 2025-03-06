@@ -8,4 +8,6 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 public interface EventParticipationRepository extends JpaRepository<EventParticipation, Long> , QuerydslPredicateExecutor<Event> {
     boolean existsByUserAndEvent(User user, Event event);
+    // 특정 이벤트에 몇 명이 있는지 확인
+    Integer countByEvent(Event event);
 }

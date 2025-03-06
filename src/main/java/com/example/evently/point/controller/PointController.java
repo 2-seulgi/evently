@@ -19,7 +19,6 @@ public class PointController {
     public ResponseEntity<Integer> getUserPoints(@PathVariable Long userSn) {
         int points = pointService.getUserPoints(userSn);
         return ResponseEntity.ok(points);
-
     }
 
 

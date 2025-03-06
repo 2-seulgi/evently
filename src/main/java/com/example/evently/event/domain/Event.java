@@ -25,6 +25,10 @@ public class Event extends BaseEntity {
     private LocalDateTime endDate;
     @Column(nullable = false)
     private int pointReward;
+    @Column(nullable = false)
+    private int maxParticipants; //  최대 참여 가능 인원
+    @Column(nullable = false)
+    private int currentParticipants = 0; //  현재 참여자 수 (초기값 0)
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private EventType eventType;
@@ -83,6 +87,13 @@ public class Event extends BaseEntity {
     // Soft Delete 처리 메소드 추가
     public void softDelete() {
         this.isDeleted = true;
+    }
+
+    /**
+     * 이벤트 참여자 수 증가
+     */
+    public void increaseParticipants() {
+        this.currentParticipants++;
     }
 
 }

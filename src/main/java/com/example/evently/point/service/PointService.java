@@ -22,6 +22,14 @@ public class PointService {
 
     private static final String POINT_CACHE_KEY = "user:points:";
 
+    /**
+     * 포인트 적립 메서드
+     * - 사용자가 이벤트에 참여하면 포인트가 증가하고, 증가한 내역이 저장됨
+     * - 사용자 총 포인트를 업데이트 하고 Redis 캐시를 갱신
+     * @param user
+     * @param points
+     * @param reason
+     */
     @Transactional
     public void earnPoints (User user, int points, String reason) {
 
@@ -39,6 +47,13 @@ public class PointService {
         redisTemplate.opsForValue().set(key, user.getPoints(), Duration.ofMinutes(5)); //이 데이터는 5분 후 자동 삭제
     }
 
+    /**
+     * 사용자의 현재 포인트 조회
+     * - redis 캐싱 값이 있으면 값 반환
+     * - 그렇지 않은 경우 조회후 redis 에 저장
+     * @param userSn
+     * @return
+     */
     @Cacheable(key = "'user:points:' + #userSn", unless = "#result == 0")
     public int getUserPoints(Long userSn){
         String key = POINT_CACHE_KEY + userSn;
