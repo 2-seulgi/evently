@@ -1,12 +1,16 @@
 package com.example.evently.point.service;
 
 import com.example.evently.point.domain.PointHistory;
+import com.example.evently.point.dto.PointHistoryResponseDto;
 import com.example.evently.point.repository.PointHistoryRepository;
 import com.example.evently.user.domain.User;
 import com.example.evently.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +34,7 @@ public class PointService {
      * @param points
      * @param reason
      */
+    @CacheEvict(key = "'user:points:' + #user.id") // 포인트 적립 시 캐싱된 데이터 삭제
     @Transactional
     public void earnPoints (User user, int points, String reason) {
 
@@ -63,13 +68,26 @@ public class PointService {
         }
 
         // redis에 데이터가 없으면 db 조회
-        User user = userRepository.findById(userSn).orElseThrow(()-> new IllegalStateException("사용자를 찾을 수 없습니다."));
+        User user = userRepository.findById(userSn).orElseThrow(()-> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         int points = user.getPoints();
 
         // redis에 저장
         redisTemplate.opsForValue().set(key, points, Duration.ofMinutes(5));
 
         return points;
+    }
+
+
+    @Cacheable(key = "'user:points:' + #userSn", unless = "#result == null")
+    @Transactional
+    public Page<PointHistoryResponseDto> getPointHistory(Long userSn, Pageable pageable){
+        // 사용자 조회
+        User user = userRepository.findById(userSn).orElseThrow(()-> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        // 포인트 내역 조회(페이징)
+        Page<PointHistory> pointHistories = pointHistoryRepository.findByUserOrderByCreatedAtDesc(user, pageable);
+
+        return pointHistories.map(PointHistoryResponseDto::fromEntity);
+
     }
 
 }

@@ -53,23 +53,6 @@ public class EventParticipationController {
         return ResponseEntity.ok(history);
     }
 
-    /**
-     * 관리자> 이벤트별 이벤트 참가자 조회
-     * @param eventId
-     * @param userName
-     * @param page
-     * @param size
-     * @return
-     */
-    @GetMapping("/event/{eventId}")
-    public ResponseEntity<Page<EventParticipantResponseDto>> getParticipantsByEvent(
-            @PathVariable Long eventId,
-            @RequestParam(required = false) String userName,  // 사용자 이름 필터
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
 
-        Page<EventParticipantResponseDto> participants = eventParticipationService.getParticipantsByEvent(eventId, userName,  page, size);
-        return ResponseEntity.ok(participants);
-    }
 
 }

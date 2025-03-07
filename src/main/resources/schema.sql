@@ -7,6 +7,8 @@ CREATE TABLE IF NOT EXISTS event (
                                                     point_reward INT NOT NULL,
                                                     is_deleted BOOLEAN NOT NULL,
                                                     event_type VARCHAR(20) NOT NULL,
+                                                    max_participants INT NOT NULL,
+                                                    current_participants INT NOT NULL,
                                                     reg_date TIMESTAMP NOT NULL,
                                                     chg_date TIMESTAMP NOT NULL
     );
