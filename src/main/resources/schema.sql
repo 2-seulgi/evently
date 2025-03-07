@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS users (
                                                     user_name VARCHAR(100) NOT NULL,
                                                     password VARCHAR(100) NOT NULL,
                                                     points INT NOT NULL DEFAULT 0,
+                                                    user_role VARCHAR(100) NOT NULL,
                                                     reg_date TIMESTAMP NOT NULL ,
                                                     chg_date TIMESTAMP NOT NULL
     );
