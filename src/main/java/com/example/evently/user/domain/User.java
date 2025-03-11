@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.EnumSet;
+
 @Entity
 @Getter
 @Table(name = "users")
@@ -21,7 +23,7 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String userName;  // 사용자 이름
     @Column(nullable = false)
-    private String password;  // 비밀번호 (추후 암호화 필요)
+    private String password;  // 비밀번호
     @Column(nullable = false)
     private int points = 0;   // 사용자의 현재 포인트
     @Enumerated(EnumType.STRING)
@@ -29,16 +31,17 @@ public class User extends BaseEntity {
     private UserRole role;
 
     // 생성자
-    private User(String userId, String userName, String password) {
+    private User(String userId, String userName, String password, UserRole role) {
         this.userId = userId;
         this.userName = userName;
         this.password = password;
+        this.role = role;
         this.points = 0;
     }
 
     //팩토리 메소드 사용
-    public static User of(String userId, String userName, String password) {
-        return new User(userId, userName, password);
+    public static User of(String userId, String userName, String password, UserRole role) { // ✅ UserRole을 직접 받도록 수정
+        return new User(userId, userName, password, role);
     }
 
     // 포인트 업데이트

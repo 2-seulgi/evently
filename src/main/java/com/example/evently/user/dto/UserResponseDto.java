@@ -8,7 +8,6 @@ public record UserResponseDto(
         Long id,
         String userId,
         String userName,
-        String password,
         int points,
         LocalDateTime regDate,
         LocalDateTime chgDate
@@ -18,7 +17,6 @@ public record UserResponseDto(
                 user.getId(),
                 user.getUserId(),
                 user.getUserName(),
-                user.getPassword(),
                 user.getPoints(),
                 user.getRegDate(),
                 user.getChgDate()

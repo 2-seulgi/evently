@@ -1,4 +1,4 @@
-package com.example.evently.global.config;
+package com.example.evently.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
