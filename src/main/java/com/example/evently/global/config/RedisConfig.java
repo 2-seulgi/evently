@@ -1,4 +1,4 @@
-package com.example.evently.config;
+package com.example.evently.global.config;
 
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;

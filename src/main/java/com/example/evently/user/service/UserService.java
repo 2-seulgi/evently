@@ -12,24 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
-    @Transactional
-    public UserResponseDto registerUser(UserRequestDto userRequestDto) {
-        // 1. 중복 검사
-        if (userRepository.existsByUserId(userRequestDto.userId())) {
-            throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
-        }
-
-        // 2. 비밀번호 암호화
-        String encryptedPassword = passwordEncoder.encode(userRequestDto.password());
-
-        User user = User.of(userRequestDto.userId(), userRequestDto.userName(), encryptedPassword, userRequestDto.role() );
-        // 3.저장
-        User savedUser = userRepository.save(user);
-        return UserResponseDto.fromEntity(savedUser);
-    }
 
 
 }

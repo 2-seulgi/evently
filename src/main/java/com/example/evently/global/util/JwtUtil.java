@@ -12,13 +12,12 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {
-    private final Key key;
-    private final long EXPIRATION_TIME = 1000 * 60 * 60; // 만료시간 : 1시간
-
     // 생성자에게서 jwt 서명 키를 설정한다.  (application.yml에 설정된 secretKey 사용)
-    public JwtUtil(@Value("${jwt.secret}") String secretKey) {
-        this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
-    }
+    @Value("${jwt.secret}") // ✅ 환경 변수 주입
+    private String secretKey;
+
+    private Key key;
+    private final long EXPIRATION_TIME = 1000 * 60 * 60; // 만료시간 : 1시간
 
     /**
      * jwt 토큰 생성 메소드
@@ -48,6 +47,7 @@ public class JwtUtil {
                 .parseClaimsJws(token) // jwt 토큰을 파싱하여 유효성 검사
                 .getBody(); // 토큰의 payload 반환
     }
+
 
 }
 

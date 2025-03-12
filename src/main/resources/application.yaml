@@ -6,21 +6,24 @@ spring:
     password:
   sql:
     init:
-      mode: always  # 항상 SQL 파일 실행
+      mode: always
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: none  # Hibernate가 테이블을 자동 생성하지 않도록 설정
+      ddl-auto: none
     show-sql: true
     properties:
       hibernate:
         format_sql: true
   h2:
     console:
-      enabled: true  # H2 웹 콘솔 활성화 (필요하면 http://localhost:8080/h2-console 로 접근 가능)
+      enabled: true
       settings:
-        web-allow-others: false  # 로컬에서만 접속 가능하도록 설정
+        web-allow-others: false
   data:
     redis:
       host: localhost
       port: 6379
+jwt:
+  secret: "testtestevent**"
+  expiration: 3600000  # JWT 만료 시간 (1시간 = 3600000ms)
