@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -27,7 +29,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@Valid @RequestBody LoginRequestDto requestDto) {
         String token = authService.login(requestDto.userId(), requestDto.password());
-        return ResponseEntity.ok(token);
+        return ResponseEntity.ok(Map.of("token", token).toString());
     }
 
     /**

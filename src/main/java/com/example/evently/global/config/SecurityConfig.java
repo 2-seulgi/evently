@@ -11,6 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -21,6 +23,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(cors -> cors.configurationSource(request -> {
+                    var config  = new org.springframework.web.cors.CorsConfiguration();
+                    config .setAllowedOrigins(List.of("http://localhost:5173")); // Vue 앱 도메인
+                    config .setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                    config .setAllowedHeaders(List.of("*"));
+                    config .setAllowCredentials(true);
+                    return config ;
+                }))
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**")) // CSRF 비활성화 및 h2 콘솔에서는 보호 해제
                 .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable())) //  H2 콘솔 UI 표시 허용
                 .authorizeHttpRequests(auth -> auth
