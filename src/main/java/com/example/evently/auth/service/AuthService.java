@@ -7,8 +7,13 @@ import com.example.evently.user.dto.UserResponseDto;
 import com.example.evently.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,20 +29,36 @@ public class AuthService {
      * @param password
      * @return
      */
-    public String login(String userId, String password) {
+    public Map<String, String> login(String userId, String password) {
+        if (userId == null) {
+            throw new IllegalArgumentException("userId cannot be null");
+        }
+        userId = userId.trim(); // 공백 제거
 
-        //1. 사용자 조회
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 잘못되었습니다."));
-
-        // 2. 비밀번호 검증
-        if(!passwordEncoder.matches(password, user.getPassword())) {
-            throw new IllegalArgumentException("아이디 또는 비밀번호가 잘못되었습니다");
+        // 사용자 조회
+        Optional<User> userOptional = userRepository.findByUserId(userId);
+        if (!userOptional.isPresent()) {
+            throw new IllegalArgumentException("아이디 또는 비밀번호가 잘못되었습니다.");
         }
 
-        // 3. jwt 토큰 발급
-        return jwtUtil.generateToken(user.getUserId(), user.getRole());
+        User user = userOptional.get();
+
+        // 비밀번호 검증
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new IllegalArgumentException("아이디 또는 비밀번호가 잘못되었습니다.");
+        }
+
+        // JWT 토큰 생성 (권한 포함!)
+        String token = jwtUtil.generateToken(user.getUserId(), user.getUserRole());
+
+        // 응답 맵 구성
+        Map<String, String> response = new HashMap<>();
+        response.put("token", token);
+        response.put("role", user.getUserRole().name());
+
+        return response;
     }
+
 
     /**
      * 회원가입
@@ -54,7 +75,7 @@ public class AuthService {
         // 2. 비밀번호 암호화
         String encryptedPassword = passwordEncoder.encode(userRequestDto.password());
 
-        User user = User.of(userRequestDto.userId(), userRequestDto.userName(), encryptedPassword, userRequestDto.role() );
+        User user = User.of(userRequestDto.userId(), userRequestDto.userName(), encryptedPassword, userRequestDto.userRole() );
         // 3.저장
         User savedUser = userRepository.save(user);
         return UserResponseDto.fromEntity(savedUser);

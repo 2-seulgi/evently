@@ -39,6 +39,7 @@ out/
 # 🛑 환경 설정 파일 (민감한 정보 보호) 제외
 application*.yml
 application*.properties
+src/main/resources/application*.yml
 
 # 📦 로그 파일 제외
 *.log

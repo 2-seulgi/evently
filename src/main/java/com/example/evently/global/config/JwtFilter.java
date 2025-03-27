@@ -32,7 +32,7 @@ public class JwtFilter extends OncePerRequestFilter {
             token = token.substring(7);
             Claims claims = jwtUtil.parseToken(token);
             String userId = claims.getSubject();
-            String role = claims.get("role").toString();
+            String role = claims.get("userRole").toString();
 
             // Spring Security의 Authentication 객체 생성
             UsernamePasswordAuthenticationToken authentication =

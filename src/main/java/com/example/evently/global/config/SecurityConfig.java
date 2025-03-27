@@ -22,21 +22,22 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
+        http    //  프론트엔드에서 접근 허용할 출처(Origin) 설정
                 .cors(cors -> cors.configurationSource(request -> {
                     var config  = new org.springframework.web.cors.CorsConfiguration();
-                    config .setAllowedOrigins(List.of("http://localhost:5173")); // Vue 앱 도메인
-                    config .setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                    config .setAllowedHeaders(List.of("*"));
-                    config .setAllowCredentials(true);
+                    config .setAllowedOrigins(List.of("http://localhost:5173")); // 개발 환경 (Vite 기본 포트) , Vue 앱 도메인
+                    config .setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용할 HTTP 메서드 지정 (모든 기본 메서드 열어두기)
+                    config .setAllowedHeaders(List.of("*"));// 모든 타입의 헤더 허용
+                    config .setAllowCredentials(true);// 쿠키나 인증 정보 포함 허용
                     return config ;
                 }))
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**")) // CSRF 비활성화 및 h2 콘솔에서는 보호 해제
+                .csrf(AbstractHttpConfigurer::disable)
                 .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable())) //  H2 콘솔 UI 표시 허용
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/h2-console/**").permitAll() // H2 콘솔 접근 허용
                         .requestMatchers("/auth/**").permitAll() // 로그인화면 및 로그인 인증 없이 가능
-                        .requestMatchers("/user").permitAll() // 회원 가입 허용
+                        .requestMatchers("/auth").permitAll()  //
+                        .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN") //관리자 API 보호
                         .anyRequest().authenticated() // 나머지 요청은 인증 필요
                 )

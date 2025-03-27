@@ -28,20 +28,20 @@ public class User extends BaseEntity {
     private int points = 0;   // 사용자의 현재 포인트
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private UserRole role;
+    private UserRole userRole;
 
     // 생성자
-    private User(String userId, String userName, String password, UserRole role) {
+    private User(String userId, String userName, String password, UserRole userRole) {
         this.userId = userId;
         this.userName = userName;
         this.password = password;
-        this.role = role;
+        this.userRole = userRole;
         this.points = 0;
     }
 
     //팩토리 메소드 사용
-    public static User of(String userId, String userName, String password, UserRole role) { // ✅ UserRole을 직접 받도록 수정
-        return new User(userId, userName, password, role);
+    public static User of(String userId, String userName, String password, UserRole userRole) { // ✅ UserRole을 직접 받도록 수정
+        return new User(userId, userName, password, userRole);
     }
 
     // 포인트 업데이트
