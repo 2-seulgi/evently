@@ -1,5 +1,6 @@
 package com.example.evently.point.controller;
 
+import com.example.evently.auth.CustomUserDetails;
 import com.example.evently.point.dto.PointHistoryResponseDto;
 import com.example.evently.point.service.PointService;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,12 +20,13 @@ public class PointController {
     private final PointService pointService;
 
     /**
-     * 사용자의 현재 포인트 조회
-     * @param userSn
+     * 로그인한 사용자의 userSn(ID)를 기반으로 본인 포인트를 조회
+     * @param userDetails
      * @return
      */
-    @GetMapping("/{userSn}/points")
-    public ResponseEntity<Integer> getUserPoints(@PathVariable Long userSn) {
+    @GetMapping("/points")
+    public ResponseEntity<Integer> getUserPoints(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userSn = userDetails.getUser().getId(); // 로그인한 사용자의 PK
         int points = pointService.getUserPoints(userSn);
         return ResponseEntity.ok(points);
     }
