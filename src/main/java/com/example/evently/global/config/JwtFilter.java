@@ -20,7 +20,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil; // 단순 필드 선언이 아닌 생성자 주입해야함!!
     private final CustomUserDetailsService userDetailsService;
 
     @Override

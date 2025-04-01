@@ -1,0 +1,39 @@
+spring:
+  cache:
+    type: redis
+  datasource:
+    url: jdbc:h2:file:~/testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  sql:
+    init:
+      mode: never  # .sql 실행 안함
+      #  mode: always # .sql 실행
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+      # ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: false
+  data:
+    redis:
+      host: localhost
+      port: 6379
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.orm.jdbc.bind: trace  # 바인딩 파라미터 출력
+    org.hibernate.type: trace  # 타입 바인딩 정보 출력
+jwt:
+  secret: "24ad9c22-0abf-42a3-ad10-382f1675d4f2"
+  expiration: 3600000
+

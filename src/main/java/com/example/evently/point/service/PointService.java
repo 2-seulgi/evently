@@ -59,7 +59,7 @@ public class PointService {
      * @param userSn
      * @return
      */
-    @Cacheable(key = "'user:points:' + #userSn", unless = "#result == 0")
+    @Cacheable(value = "userPoints", key = "'user:points:' + #userSn", unless = "#result == 0")
     public int getUserPoints(Long userSn){
         String key = POINT_CACHE_KEY + userSn;
         Integer cachedPoints  = (Integer) redisTemplate.opsForValue().get(key);
