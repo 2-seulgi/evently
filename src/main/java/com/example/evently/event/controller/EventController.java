@@ -15,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/events")
@@ -79,6 +80,6 @@ public class EventController {
             @PathVariable Long eventId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         eventParticipationService.participate(eventId, userDetails.getUser().getId());
-        return ResponseEntity.ok("이벤트 참여 완료");
+        return ResponseEntity.ok(Map.of("message", "이벤트 참여 완료", "pointReward", 100));
     }
 }

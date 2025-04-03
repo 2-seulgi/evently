@@ -112,7 +112,7 @@ public class EventParticipationService {
         LocalDateTime startOfToday = LocalDate.now().atStartOfDay();
         LocalDateTime endOfToday = LocalDate.now().atTime(LocalTime.MAX);
 
-        boolean alreadyCheckedIn = eventParticipationRepository.existsByUserAndEventAndParticipationDateBetween(
+        boolean alreadyCheckedIn = eventParticipationRepository.existsByUserAndEventAndRegDateBetween(
                 user, event, startOfToday, endOfToday
         );
 

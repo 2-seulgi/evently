@@ -13,5 +13,5 @@ public interface EventParticipationRepository extends JpaRepository<EventPartici
     // 특정 이벤트에 몇 명이 있는지 확인
     Integer countByEvent(Event event);
 
-    boolean existsByUserAndEventAndParticipationDateBetween(User user, Event event, LocalDateTime startOfToday, LocalDateTime endOfToday);
+    boolean existsByUserAndEventAndRegDateBetween(User user, Event event, LocalDateTime startOfToday, LocalDateTime endOfToday);
 }
