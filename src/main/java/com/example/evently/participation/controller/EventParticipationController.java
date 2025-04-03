@@ -20,17 +20,6 @@ public class EventParticipationController {
     private final EventParticipationService eventParticipationService;
 
     /**
-     * 사용자 > 이벤트 참여
-     * @param eventParticipationRequestDto
-     * @return
-     */
-    @PostMapping
-    public ResponseEntity<String> participateEvent(@RequestBody EventParticipationRequestDto eventParticipationRequestDto) {
-        eventParticipationService.participateEvent(eventParticipationRequestDto);
-        return ResponseEntity.ok("이벤트 참여 완료");
-    }
-
-    /**
      * 사용자별 이벤트 참여내역 조회
      * @param userSn
      * @param eventName

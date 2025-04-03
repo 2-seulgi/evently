@@ -48,8 +48,6 @@ public class EventService {
     public Page<EventResponseDto> getEvents(String title, LocalDateTime startDate, LocalDateTime endDate, Integer minPoint, Pageable pageable) {
         BooleanBuilder builder = buildSearchPredicate(title, startDate, endDate, minPoint);
 
-        buildSearchPredicate(title,startDate,endDate,minPoint);
-
         //  Soft Delete된 이벤트는 제외
         builder.and(QEvent.event.isDeleted.eq(false));
 

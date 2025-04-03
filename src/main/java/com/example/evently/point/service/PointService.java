@@ -21,10 +21,7 @@ import java.time.Duration;
 public class PointService {
 
     private final PointHistoryRepository pointHistoryRepository;
-    private final RedisTemplate<String, Object> redisTemplate;
     private final UserRepository userRepository;
-
-    private static final String POINT_CACHE_KEY = "user:points:";
 
     /**
      * 포인트 적립 메서드
@@ -34,7 +31,7 @@ public class PointService {
      * @param points
      * @param reason
      */
-    @CacheEvict(key = "'user:points:' + #user.id") // 포인트 적립 시 캐싱된 데이터 삭제
+    @CacheEvict(value = "userPoints", key = "'user:points:' + #user.id") // 포인트 적립 시 캐싱된 데이터 삭제
     @Transactional
     public void earnPoints (User user, int points, String reason) {
 
@@ -47,9 +44,6 @@ public class PointService {
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         user.updatePoints(user.getPoints() + points);
 
-        // 3. redis 캐싱 업데이트로 조회 속도 향상
-        String key = POINT_CACHE_KEY + user.getId();
-        redisTemplate.opsForValue().set(key, user.getPoints(), Duration.ofMinutes(5)); //이 데이터는 5분 후 자동 삭제
     }
 
     /**
@@ -59,26 +53,27 @@ public class PointService {
      * @param userSn
      * @return
      */
-    @Cacheable(value = "userPoints", key = "'user:points:' + #userSn", unless = "#result == 0")
+    @Cacheable(
+            value = "userPoints",
+            key = "'user:points:' + #userSn",
+            unless = "#result == 0" // 결과가 0이면 캐싱 안 함
+    )
     public int getUserPoints(Long userSn){
-        String key = POINT_CACHE_KEY + userSn;
-        Integer cachedPoints  = (Integer) redisTemplate.opsForValue().get(key);
-        if (cachedPoints != null) {
-            return cachedPoints;
-        }
 
         // redis에 데이터가 없으면 db 조회
         User user = userRepository.findById(userSn).orElseThrow(()-> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-        int points = user.getPoints();
 
-        // redis에 저장
-        redisTemplate.opsForValue().set(key, points, Duration.ofMinutes(5));
-
-        return points;
+        return user.getPoints();
     }
 
-
-    @Cacheable(key = "'user:points:' + #userSn", unless = "#result == null")
+    /**
+     * 사용자 포인트 내역 조회 API
+     */
+    @Cacheable(
+            value = "userPoints",  // 캐시 공간 이름
+            key = "'user:points:' + #userSn",  // 저장될 키 (동적으로 생성됨)
+            unless = "#result == null"  // 결과가 null이면 캐시하지 않음
+    )
     @Transactional
     public Page<PointHistoryResponseDto> getPointHistory(Long userSn, Pageable pageable){
         // 사용자 조회

@@ -1,6 +1,7 @@
 package com.example.evently.participation.service;
 
 import com.example.evently.event.domain.Event;
+import com.example.evently.event.domain.enums.EventType;
 import com.example.evently.event.repository.EventRepository;
 import com.example.evently.participation.domain.EventParticipation;
 import com.example.evently.participation.dto.EventParticipantResponseDto;
@@ -23,7 +24,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -40,33 +43,39 @@ public class EventParticipationService {
     private static final String PARTICIPATION_COUNT_KEY = "event:participation:";
 
     /**
-     * 이벤트 참가
-     * @param eventParticipationRequestDto
+     * 이벤트참여
+     * @param eventId
+     * @param userSn
      */
     @Transactional
-    public void participateEvent(EventParticipationRequestDto  eventParticipationRequestDto) {
+    public void participate(Long eventId, Long userSn) {
         // 사용자 조회
-        User user = userRepository.findById(eventParticipationRequestDto.userSn())
+        User user = userRepository.findById(userSn)
                 .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
         // 이벤트 조회
-        Event event = eventRepository.findById(eventParticipationRequestDto.eventId())
+        Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이벤트를 찾을 수 없습니다."));
 
-        // 참여자 수 확인
         String key = PARTICIPATION_COUNT_KEY + user.getId();
+
+        // 참여자 수 확인
         Integer participationCount = (Integer) redisTemplate.opsForValue().get(key);  // Redis에서 참여자 수 조회
         if (participationCount == null) {
             participationCount = eventParticipationRepository.countByEvent(event); // DB 조회
             redisTemplate.opsForValue().set(key, participationCount, Duration.ofMinutes(30)); //(캐시에 데이터가 있으면 DB를 조회하지 않고 Redis 데이터를 사용)
         }
 
-        // 이벤트 최대 참여 인원 초과 확인
-        if (participationCount >= event.getMaxParticipants() ) {
-            throw new IllegalStateException("이벤트가 마감되었습니다.");
+        if (event.getEventType() == EventType.CHECKIN) {
+            validateCheckInToday(user, event);
+        } else {
+            // 이벤트 최대 참여 인원 초과 확인
+            if (participationCount >= event.getMaxParticipants() ) {
+                throw new IllegalStateException("이벤트가 마감되었습니다.");
+            }
         }
 
         // 중복 참여 여부 확인 -> 락을 사용해서 동시성 체크(한번에 하나의 쓰레드만 특정 코드 블록을 실행)
-        RLock lock = redissonClient.getLock("event_lock:" + eventParticipationRequestDto.eventId());
+        RLock lock = redissonClient.getLock("event_lock:" + eventId);
         try{
             if(lock.tryLock(5,10, TimeUnit.SECONDS)){ // 최대 5초간 락을 획득하고, 락을 획득하면 10초 동안 다른 쓰레드가 접근하지 못하게 함
                 boolean alreadyParticipated = eventParticipationRepository.existsByUserAndEvent(user, event); // 특정 사용자의 특정 이벤트 참여 확인
@@ -96,6 +105,19 @@ public class EventParticipationService {
             throw new RuntimeException("이벤트 참여 중 오류가 발생했습니다.");
         } finally {
             lock.unlock();
+        }
+    }
+
+    private void validateCheckInToday(User user, Event event) {
+        LocalDateTime startOfToday = LocalDate.now().atStartOfDay();
+        LocalDateTime endOfToday = LocalDate.now().atTime(LocalTime.MAX);
+
+        boolean alreadyCheckedIn = eventParticipationRepository.existsByUserAndEventAndParticipationDateBetween(
+                user, event, startOfToday, endOfToday
+        );
+
+        if (alreadyCheckedIn) {
+            throw new IllegalStateException("오늘은 이미 출석체크를 완료했습니다.");
         }
     }
 

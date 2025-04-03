@@ -11,6 +11,7 @@ public enum EventType {
     QUIZ("퀴즈"),
     PROMOTION("프로모션"),
     GIVEAWAY("이벤트 경품"),
+    CHECKIN("출석체크"),
     OTHER("기타");
 
     private final String description;

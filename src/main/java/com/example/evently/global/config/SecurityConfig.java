@@ -3,6 +3,7 @@ package com.example.evently.global.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -35,6 +36,8 @@ public class SecurityConfig {
                 .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable())) //  H2 콘솔 UI 표시 허용
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/h2-console/**").permitAll() // H2 콘솔 접근 허용
+                        .requestMatchers("/events/**").permitAll() // 이벤트 등록용 임시로 추가
+                        // .requestMatchers(HttpMethod.GET, "/events/**").permitAll() // 리스트 & 상세 조회는 허용
                         .requestMatchers("/auth/**").permitAll() // 로그인화면 및 로그인 인증 없이 가능
                         .requestMatchers("/auth").permitAll()  //
                         .requestMatchers("/auth/**").permitAll()

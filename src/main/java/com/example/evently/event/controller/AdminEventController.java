@@ -1,9 +1,10 @@
 package com.example.evently.event.controller;
 
-import com.example.evently.auth.CustomUserDetails;
+import com.example.evently.event.dto.EventRequestDto;
 import com.example.evently.event.dto.EventResponseDto;
 import com.example.evently.event.service.EventService;
-import com.example.evently.participation.service.EventParticipationService;
+import com.example.evently.global.dto.SuccessResponseDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,30 +12,24 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
 @RestController
-@RequestMapping("/events")
+@RequestMapping("/admin/events")
 @RequiredArgsConstructor
-public class EventController {
+public class AdminEventController {
     private final EventService eventService;
-    private final EventParticipationService eventParticipationService;
 
-    /**
-     * 이벤트 리스트 조회
-     * @param title
-     * @param startDate
-     * @param endDate
-     * @param minPoint
-     * @param page
-     * @param size
-     * @param sortBy
-     * @param direction
-     * @return
-     */
+    // 이벤트 등록
+    @PostMapping
+    public ResponseEntity<EventResponseDto> createEvent (@Valid @RequestBody EventRequestDto requestDto) {
+        EventResponseDto responseDto = eventService.createEvent(requestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+    }
+
+    // 이벤트 리스트 조회
     @GetMapping
     public ResponseEntity<Page<EventResponseDto>> getEvents(
             @RequestParam(required = false) String title,
@@ -57,28 +52,31 @@ public class EventController {
                 sortBy
         ));
         return ResponseEntity.ok(eventService.getEvents(title, startDate, endDate, minPoint, pageable));
+
     }
 
-    /**
-     * 이벤트 상세
-     * @param id
-     * @return
-     */
+    // 이벤트 상세
     @GetMapping("/{id}")
     public ResponseEntity<EventResponseDto> getEventById(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(eventService.getEventById(id));
     }
 
-    /**
-     * 사용자 > 이벤트 참여
-     * @param
-     * @return
-     */
-    @PostMapping("/{eventId}/participation")
-    public ResponseEntity<?> participateInEvent(
-            @PathVariable Long eventId,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-        eventParticipationService.participate(eventId, userDetails.getUser().getId());
-        return ResponseEntity.ok("이벤트 참여 완료");
+    // 이벤트 수정
+    @PutMapping("/{id}")
+    public ResponseEntity<EventResponseDto> updateEvent(@PathVariable Long id, @RequestBody EventRequestDto eventRequestDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.updateEvent(id, eventRequestDto));
     }
+
+    // 이벤트 삭제
+    @DeleteMapping("/{id}")
+    public ResponseEntity<SuccessResponseDto> softDeleteEvent(@PathVariable Long id) {
+        try {
+            eventService.softDeleteEvent(id);
+            return ResponseEntity.ok(SuccessResponseDto.of("이벤트가 성공적으로 삭제되었습니다."));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(SuccessResponseDto.of(e.getMessage()));
+        }
+    }
+
+
 }
