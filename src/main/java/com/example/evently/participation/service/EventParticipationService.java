@@ -27,6 +27,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -48,7 +49,7 @@ public class EventParticipationService {
      * @param userSn
      */
     @Transactional
-    public void participate(Long eventId, Long userSn) {
+    public int  participate(Long eventId, Long userSn) {
         // 사용자 조회
         User user = userRepository.findById(userSn)
                 .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
@@ -58,16 +59,17 @@ public class EventParticipationService {
 
         String key = PARTICIPATION_COUNT_KEY + user.getId();
 
-        // 참여자 수 확인
-        Integer participationCount = (Integer) redisTemplate.opsForValue().get(key);  // Redis에서 참여자 수 조회
-        if (participationCount == null) {
-            participationCount = eventParticipationRepository.countByEvent(event); // DB 조회
-            redisTemplate.opsForValue().set(key, participationCount, Duration.ofMinutes(30)); //(캐시에 데이터가 있으면 DB를 조회하지 않고 Redis 데이터를 사용)
-        }
+        int reward = 0;
 
         if (event.getEventType() == EventType.CHECKIN) {
             validateCheckInToday(user, event);
         } else {
+            // 참여자 수 확인
+            Integer participationCount = (Integer) redisTemplate.opsForValue().get(key);  // Redis에서 참여자 수 조회
+            if (participationCount == null) {
+                participationCount = eventParticipationRepository.countByEvent(event); // DB 조회
+                redisTemplate.opsForValue().set(key, participationCount, Duration.ofMinutes(30)); //(캐시에 데이터가 있으면 DB를 조회하지 않고 Redis 데이터를 사용)
+            }
             // 이벤트 최대 참여 인원 초과 확인
             if (participationCount >= event.getMaxParticipants() ) {
                 throw new IllegalStateException("이벤트가 마감되었습니다.");
@@ -80,8 +82,10 @@ public class EventParticipationService {
             if(lock.tryLock(5,10, TimeUnit.SECONDS)){ // 최대 5초간 락을 획득하고, 락을 획득하면 10초 동안 다른 쓰레드가 접근하지 못하게 함
                 boolean alreadyParticipated = eventParticipationRepository.existsByUserAndEvent(user, event); // 특정 사용자의 특정 이벤트 참여 확인
 
-                if(alreadyParticipated){
-                    throw new IllegalStateException("이미 참여한 이벤트 입니다.");
+                if (event.getEventType() != EventType.CHECKIN) { // 출석체크에 대한 검사는 따로 진행하기 때문에 여기서는 검사 안함
+                    if (alreadyParticipated) {
+                        throw new IllegalStateException("이미 참여한 이벤트 입니다.");
+                    }
                 }
 
                 // 이벤트 참여 저장
@@ -96,8 +100,9 @@ public class EventParticipationService {
                 eventRepository.save(event);
                 redisTemplate.opsForValue().increment(key);
 
+                reward = event.getPointReward(); // 실제 포인트
                 // 포인트 지급
-                pointService.earnPoints(user, event.getPointReward(), "이벤트 참여: " + event.getTitle());
+                pointService.earnPoints(user, reward, "이벤트 참여: " + event.getTitle());
             }else{
                 throw new IllegalStateException("잠시 후 다시 시도해주세요.");
             }
@@ -106,6 +111,8 @@ public class EventParticipationService {
         } finally {
             lock.unlock();
         }
+
+        return reward;
     }
 
     private void validateCheckInToday(User user, Event event) {
@@ -142,4 +149,12 @@ public class EventParticipationService {
     }
 
 
+    public List<Long> getTodayCheckInEventIds(Long userSn) {
+        List<EventParticipation> participations = eventParticipationRepository.findByUserIdAndEvent_EventTypeAndRegDate(
+                userSn, EventType.CHECKIN, LocalDateTime.now());
+        return participations.stream()
+                .map(p->p.getEvent().getId()) //각 참여 기록 EventParticipation 객체에서 그 안에 있는 Event의 ID만 추출
+                .distinct()
+                .toList();
+    }
 }

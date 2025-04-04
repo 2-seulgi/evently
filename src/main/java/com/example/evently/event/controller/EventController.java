@@ -79,7 +79,12 @@ public class EventController {
     public ResponseEntity<?> participateInEvent(
             @PathVariable Long eventId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        eventParticipationService.participate(eventId, userDetails.getUser().getId());
-        return ResponseEntity.ok(Map.of("message", "이벤트 참여 완료", "pointReward", 100));
+
+        int pointReward = eventParticipationService.participate(eventId, userDetails.getUser().getId());
+
+        return ResponseEntity.ok(Map.of(
+                "msgCd", "Success",
+                "pointReward", pointReward
+        ));
     }
 }
