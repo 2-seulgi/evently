@@ -59,7 +59,6 @@ public class PointService {
             unless = "#result == 0" // 결과가 0이면 캐싱 안 함
     )
     public int getUserPoints(Long userSn){
-
         // redis에 데이터가 없으면 db 조회
         User user = userRepository.findById(userSn).orElseThrow(()-> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 

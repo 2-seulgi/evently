@@ -11,6 +11,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api/users")
@@ -25,10 +27,10 @@ public class PointController {
      * @return
      */
     @GetMapping("/points")
-    public ResponseEntity<Integer> getUserPoints(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<?> getUserPoints(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Long userSn = userDetails.getUser().getId(); // 로그인한 사용자의 PK
         int points = pointService.getUserPoints(userSn);
-        return ResponseEntity.ok(points);
+        return ResponseEntity.ok(Map.of("points", points)); // 키가 포함된 객체 응답
     }
 
     /**
