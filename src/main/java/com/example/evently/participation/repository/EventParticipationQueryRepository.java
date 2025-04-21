@@ -44,7 +44,8 @@ public class EventParticipationQueryRepository {
         List<EventParticipationResponseDto> results = queryFactory
                 .select(Projections.constructor(EventParticipationResponseDto.class,
                         eventParticipation.event.id,
-                        event.event.title,
+                        event.title,
+                        event.pointReward,
                         eventParticipation.regDate
                         ))
                 .from(eventParticipation)

@@ -16,6 +16,6 @@ public record EventRequestDto (
         @NotNull(message = "이벤트 종료 날짜는 필수입니다.") @Future(message = "종료 날짜는 현재보다 미래여야 합니다.") LocalDateTime endDate,
         @Min(value = 0, message = "포인트는 0 이상이어야 합니다.") int pointReward,
         @NotNull(message = "이벤트 유형은 필수입니다.") EventType eventType
-){
-
+)
+{
 }

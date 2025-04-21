@@ -3,7 +3,6 @@ package com.example.evently.event.controller;
 import com.example.evently.auth.CustomUserDetails;
 import com.example.evently.event.dto.EventResponseDto;
 import com.example.evently.event.service.EventService;
-import com.example.evently.participation.service.EventParticipationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -22,7 +20,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class EventController {
     private final EventService eventService;
-    private final EventParticipationService eventParticipationService;
 
     /**
      * 이벤트 리스트 조회
@@ -70,21 +67,4 @@ public class EventController {
         return ResponseEntity.status(HttpStatus.OK).body(eventService.getEventById(id));
     }
 
-    /**
-     * 사용자 > 이벤트 참여
-     * @param
-     * @return
-     */
-    @PostMapping("/{eventId}/participation")
-    public ResponseEntity<?> participateInEvent(
-            @PathVariable Long eventId,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-
-        int pointReward = eventParticipationService.participate(eventId, userDetails.getUser().getId());
-
-        return ResponseEntity.ok(Map.of(
-                "msgCd", "Success",
-                "pointReward", pointReward
-        ));
-    }
 }

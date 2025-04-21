@@ -15,15 +15,17 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
+@RequestMapping("/users")
 @RequiredArgsConstructor
 public class EventParticipationController {
     private final EventParticipationService eventParticipationService;
 
     /**
      * 마이페이지 > 사용자별 이벤트 참여내역 조회
-     * @param userSn
+     * @param userDetails
      * @param eventName
      * @param startDate
      * @param endDate
@@ -31,17 +33,38 @@ public class EventParticipationController {
      * @param size
      * @return
      */
-    @GetMapping("/users/{userSn}/participations")
-    public ResponseEntity<Page<EventParticipationResponseDto>> getUserParticipationHistory(
-            @PathVariable Long userSn,
-            @RequestParam(required = false) String eventName,  // 이벤트명 필터 (선택적)
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate, // 시작 날짜 필터
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate, // 종료 날짜 필터
+    @GetMapping("/me/participation")
+    public ResponseEntity<Page<EventParticipationResponseDto>> getMyParticipationHistory(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(required = false) String eventName,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        Page<EventParticipationResponseDto> history = eventParticipationService.getUserParticipationHistory(userSn, eventName, startDate, endDate, page, size);
+        Long userSn = userDetails.getUser().getId();
+        Page<EventParticipationResponseDto> history = eventParticipationService.getUserParticipationHistory(
+                userSn, eventName, startDate, endDate, page, size
+        );
         return ResponseEntity.ok(history);
+    }
+
+    /**
+     * 사용자 > 이벤트 참여
+     * @param
+     * @return
+     */
+    @PostMapping("/me/participation/{eventId}")
+    public ResponseEntity<?> participateInEvent(
+            @PathVariable Long eventId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        int pointReward = eventParticipationService.participate(eventId, userDetails.getUser().getId());
+
+        return ResponseEntity.ok(Map.of(
+                "msgCd", "Success",
+                "pointReward", pointReward
+        ));
     }
 
     /**
@@ -50,14 +73,12 @@ public class EventParticipationController {
      * @param userDetails
      * @return
      */
-    @GetMapping("/users/me/participations/checkin/today")
+    @GetMapping("/me/participation/checkin/today")
     public ResponseEntity<List<Long>> getTodayCheckinParticipation(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         List<Long> attendedToday = eventParticipationService.getTodayCheckInEventIds(userDetails.getUser().getId());
         return ResponseEntity.ok(attendedToday); // 오늘 참여한 출석 이벤트 ID 리스트
     }
-
-
 
 }

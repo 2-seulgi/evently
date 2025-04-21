@@ -1,5 +1,6 @@
 package com.example.evently.point.service;
 
+import com.example.evently.event.domain.Event;
 import com.example.evently.point.domain.PointHistory;
 import com.example.evently.point.dto.PointHistoryResponseDto;
 import com.example.evently.point.repository.PointHistoryRepository;
@@ -33,10 +34,10 @@ public class PointService {
      */
     @CacheEvict(value = "userPoints", key = "'user:points:' + #user.id") // 포인트 적립 시 캐싱된 데이터 삭제
     @Transactional
-    public void earnPoints (User user, int points, String reason) {
+    public void earnPoints (User user, Event event, int points, String reason) {
 
         //1. 포인트 적립 내역 저장
-        PointHistory pointHistory = PointHistory.earnPoints(user, points, reason);
+        PointHistory pointHistory = PointHistory.earnPoints(user, event, points, reason);
         pointHistoryRepository.save(pointHistory);
 
         //2. 사용자 포인트 업데이트

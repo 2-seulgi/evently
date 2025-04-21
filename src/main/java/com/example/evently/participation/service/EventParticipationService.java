@@ -102,7 +102,7 @@ public class EventParticipationService {
 
                 reward = event.getPointReward(); // 실제 포인트
                 // 포인트 지급
-                pointService.earnPoints(user, reward, "이벤트 참여: " + event.getTitle());
+                pointService.earnPoints(user,event, reward, "이벤트 참여: " + event.getTitle());
             }else{
                 throw new IllegalStateException("잠시 후 다시 시도해주세요.");
             }
@@ -143,12 +143,25 @@ public class EventParticipationService {
         return eventParticipationQueryRepository.findUserParticipationHistory(userSn, eventName, startDate, endDate, pageable);
     }
 
+    /**
+     * 관리자 > 이벤트별 참가자 조회
+     * @param eventId
+     * @param userName
+     * @param page
+     * @param size
+     * @return
+     */
     public Page<EventParticipantResponseDto> getParticipantsByEvent(Long eventId, String userName, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "regDate"));
         return eventParticipationQueryRepository.findParticipantsByEventId(eventId, userName, pageable);
     }
 
 
+    /**
+     * 오늘 기준 출석체크 확인
+     * @param userSn
+     * @return
+     */
     public List<Long> getTodayCheckInEventIds(Long userSn) {
         List<EventParticipation> participations = eventParticipationRepository.findByUserIdAndEvent_EventTypeAndRegDate(
                 userSn, EventType.CHECKIN, LocalDateTime.now());

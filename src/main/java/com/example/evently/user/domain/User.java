@@ -18,16 +18,16 @@ public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false, unique = true)
+    @Column(name = "user_id", nullable = false, unique = true)
     private String userId; // 사용자 아이디
-    @Column(nullable = false)
+    @Column(name ="user_name", nullable = false)
     private String userName;  // 사용자 이름
-    @Column(nullable = false)
+    @Column(name="password", nullable = false)
     private String password;  // 비밀번호
-    @Column(nullable = false)
+    @Column(name="points",nullable = false)
     private int points = 0;   // 사용자의 현재 포인트
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name="user_role",nullable = false)
     private UserRole userRole;
 
     // 생성자
