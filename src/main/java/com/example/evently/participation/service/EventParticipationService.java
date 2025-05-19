@@ -62,7 +62,7 @@ public class EventParticipationService {
         int reward = 0;
 
         if (event.getEventType() == EventType.CHECKIN) {
-            validateCheckInToday(user, event);
+            validateCheckInToday(user, event); // 출석체크 용 중복체크 (출석은 1일 1출석)
         } else {
             // 참여자 수 확인
             Integer participationCount = (Integer) redisTemplate.opsForValue().get(key);  // Redis에서 참여자 수 조회
