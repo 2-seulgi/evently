@@ -59,7 +59,7 @@ public class EventParticipationController {
             @PathVariable Long eventId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        int pointReward = eventParticipationService.participate(eventId, userDetails.getUser().getId());
+        int pointReward = eventParticipationService.participateInEvent(eventId, userDetails.getUser().getId());
 
         return ResponseEntity.ok(Map.of(
                 "msgCd", "Success",
