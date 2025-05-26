@@ -1,6 +1,7 @@
 ## 📖 목차
-- [소개](#소개)
+- [📌 소개](#📌-소개)
 - [✨ 주요 기능](#✨-주요-기능)
+- [🔍 참여 로직 상세](#🔍-참여-로직-상세)
 - [🛠️ 기술 스택](#🛠️-기술-스택)
 - [🔧 도메인 구조](#🔧-도메인-구조)
 - [🚀 설치 및 실행](#🚀-설치-및-실행)
@@ -23,6 +24,9 @@
 5. **마이페이지에서 포인트/참여 내역 조회**
 6. **관리자용 참가자 조회 & 통계 페이지**
 
+## 🔍 참여 로직 상세
+
+
 ## 🛠️ 기술 스택
 - Java 17
 - Spring Boot 3.2.3
@@ -31,3 +35,16 @@
 - MySQL
 - Swagger (API 명세)
 - Postman (요청 시나리오 테스트)
+
+## 🔧 도메인 구조
+```mermaid
+erDiagram
+  USER ||--o{ EVENT_PARTICIPATION       : participates
+  EVENT ||--o{ EVENT_PARTICIPATION      : has_participation
+  USER }|..|{ POINT_HISTORY             : accumulates
+
+  %% — 미래 확장
+  EVENT ||--o{ SURVEY_QUESTION          : has_questions_future
+  SURVEY_QUESTION ||--o{ SURVEY_RESPONSE : answered_by_future
+  USER ||--o{ SURVEY_RESPONSE           : submits_future
+```

@@ -18,4 +18,5 @@ public record EventRequestDto (
         @NotNull(message = "이벤트 유형은 필수입니다.") EventType eventType
 )
 {
+
 }
