@@ -79,9 +79,9 @@ public class EventParticipationService {
      * @return
      */
     public List<Long> getTodayCheckInEventIds(Long userSn) {
-        List<EventParticipation> participations = eventParticipationRepository.findByUserIdAndEvent_EventTypeAndRegDate(
+        List<EventParticipation> participation = eventParticipationRepository.findByUserIdAndEvent_EventTypeAndRegDate(
                 userSn, EventType.CHECKIN, LocalDateTime.now());
-        return participations.stream()
+        return participation.stream()
                 .map(p->p.getEvent().getId()) //각 참여 기록 EventParticipation 객체에서 그 안에 있는 Event의 ID만 추출
                 .distinct()
                 .toList();
