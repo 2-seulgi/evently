@@ -49,7 +49,7 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-    // ✅ H2 Database 추가
+    // H2 Database 추가
     implementation 'com.h2database:h2'
 
     // Spring Boot Redis Starter (필수)
@@ -58,10 +58,25 @@ dependencies {
     implementation 'org.redisson:redisson-spring-boot-starter:3.22.0'
     // JSON 직렬화를 위한 Jackson (Redis 캐싱에 필요)
     implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+    // JUnit 5 (Jupiter)
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+
+    // Mockito
+    testImplementation 'org.mockito:mockito-core:5.11.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.11.0'
+
+    // AssertJ (선택) → 더 나은 단언문 제공
+    testImplementation 'org.assertj:assertj-core:3.25.3'
 }
 
 tasks.withType(JavaCompile).configureEach {
     options.annotationProcessorGeneratedSourcesDirectory = file("build/generated/sources/annotationProcessor/java/main")
+}
+
+test {
+    useJUnitPlatform()
 }
 
 tasks.named("test") {

@@ -45,14 +45,13 @@ public class AttendanceEventStrategy implements ParticipationStrategy {
         int point = event.getPointReward();
 
         // 동시성 제어를 하기 위해서 Redisson 분산 락을 획득함
-        RLock lock = redissonClient.getLock(key); // 사용자 단위로 락 획득
+        RLock lock = null;
         try{
+            lock = redissonClient.getLock(key); // 사용자 단위로 락 획득
             if (!lock.tryLock(0, 10, TimeUnit.SECONDS)) {
                 throw new IllegalStateException("이미 참여 중입니다.");
             }
-            if (participationRepository.existsByUserAndEvent(user, event)) {
-                throw new IllegalStateException("이미 참여한 이벤트입니다.");
-            }
+
             // 이벤트 참여 엔티티 생성 및 저장
             EventParticipation participation = EventParticipation.builder()
                     .user(user)
@@ -69,7 +68,10 @@ public class AttendanceEventStrategy implements ParticipationStrategy {
         } catch (InterruptedException e) {
             throw new RuntimeException("참여 중 오류가 발생했습니다.");
         } finally {
-            lock.unlock(); // 락 해제
+            // null일 경우나 락이 내가 가진 게 아닐 경우 예외 발생 막기
+            if (lock != null && lock.isHeldByCurrentThread()) {
+                lock.unlock();
+            }
         }
     }
 
