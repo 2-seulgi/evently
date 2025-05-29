@@ -16,7 +16,9 @@ import org.redisson.api.RedissonClient;
 import org.redisson.api.RLock;
 import org.springframework.data.redis.core.RedisTemplate;
 
+import java.security.cert.TrustAnchor;
 import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -65,6 +67,18 @@ class AttendanceEventStrategyTest {
         assertThrows(IllegalStateException.class, () -> {
             strategy.participate(event, user); // 내부에서 validateCheckInToday 호출됨
         });
+    }
+
+    @Test
+    void 락_획득_실패시_예외() throws InterruptedException {
+        // given
+        given(participationRepository.existsByUserAndEventAndRegDateBetween(
+                any(),any(), any(), any()
+        )).willReturn(false);
+        given(redissonClient.getLock(anyString())).willReturn(lock);
+        given(lock.tryLock(0, 5, TimeUnit.SECONDS)).willReturn(false); // 락 획득 실패
+        // when & then
+        assertThrows(IllegalStateException.class, () -> strategy.participate(event, user));
     }
 
 
