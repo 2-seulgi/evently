@@ -1,9 +1,9 @@
--- 🧑‍💻 유저
-INSERT INTO users (user_id, user_name, password, points, user_role, reg_date, chg_date)
+-- 🧑‍💻 유저 비밀번호 (dnflxla123$)
+INSERT INTO users (user_id, user_name, password, points, user_role, user_status, is_use, reg_date, chg_date)
 VALUES
-    ('testuser1@example.com', '테스트유저1', '$2a$10$9uCz5sk7biUOtDwEoPXQM.PhO4Mr14svGeP4gSAlGOhN3aomltf1S',0, 'USER',  CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('bien@example.com', '본인', '$2a$10$9uCz5sk7biUOtDwEoPXQM.PhO4Mr14svGeP4gSAlGOhN3aomltf1S',0, 'USER', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('admin@example.com', '관리자', '$2a$10$9uCz5sk7biUOtDwEoPXQM.PhO4Mr14svGeP4gSAlGOhN3aomltf1S',0, 'ADMIN', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    ('testuser1@example.com', '테스트유저1', '$2a$10$9uCz5sk7biUOtDwEoPXQM.PhO4Mr14svGeP4gSAlGOhN3aomltf1S',0, 'USER', 'ACTIVE', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('bien@example.com', '본인', '$2a$10$9uCz5sk7biUOtDwEoPXQM.PhO4Mr14svGeP4gSAlGOhN3aomltf1S',0, 'USER', 'ACTIVE', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('admin@example.com', '관리자', '$2a$10$9uCz5sk7biUOtDwEoPXQM.PhO4Mr14svGeP4gSAlGOhN3aomltf1S',0, 'ADMIN' , 'ACTIVE', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- 📅 이벤트
 INSERT INTO event (title, description, start_date, end_date, point_reward, max_participants, current_participants, event_type, is_deleted, reg_date, chg_date)

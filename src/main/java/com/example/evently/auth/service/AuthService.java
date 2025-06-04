@@ -3,6 +3,7 @@ package com.example.evently.auth.service;
 import com.example.evently.global.util.JwtUtil;
 import com.example.evently.user.domain.User;
 import com.example.evently.user.domain.enums.UserRole;
+import com.example.evently.user.domain.enums.UserStatus;
 import com.example.evently.user.dto.UserRequestDto;
 import com.example.evently.user.dto.UserResponseDto;
 import com.example.evently.user.repository.UserRepository;
@@ -79,8 +80,14 @@ public class AuthService {
         // 2. 비밀번호 암호화
         String encryptedPassword = passwordEncoder.encode(userRequestDto.password());
 
-        User user = User.of(userRequestDto.userId(), userRequestDto.userName(), encryptedPassword,  UserRole.USER // 여기서 고정 세팅
-        );
+        User user = User.of(
+                userRequestDto.userId(),
+                userRequestDto.userName(),
+                encryptedPassword,
+                UserStatus.ACTIVE,
+                UserRole.USER
+        );// 여기서 고정 세팅
+
         // 3.저장
         User savedUser = userRepository.save(user);
         return UserResponseDto.fromEntity(savedUser);

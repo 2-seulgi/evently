@@ -20,8 +20,11 @@ CREATE TABLE IF NOT EXISTS users (
                                                     password VARCHAR(100) NOT NULL,
                                                     points INT NOT NULL DEFAULT 0,
                                                     user_role VARCHAR(100) NOT NULL,
+                                                    user_status VARCHAR(100) NOT NULL,
+                                                    is_use BOOLEAN NOT NULL,
                                                     reg_date TIMESTAMP NOT NULL ,
-                                                    chg_date TIMESTAMP NOT NULL
+                                                    chg_date TIMESTAMP NOT NULL,
+                                                    withdrawal_dt TIMESTAMP NOT NULL
     );
 
 CREATE TABLE IF NOT EXISTS event_participation  (

@@ -2,6 +2,7 @@ package com.example.evently.user.domain;
 
 import com.example.evently.global.entity.BaseEntity;
 import com.example.evently.user.domain.enums.UserRole;
+import com.example.evently.user.domain.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -26,22 +27,28 @@ public class User extends BaseEntity {
     private String password;  // 비밀번호
     @Column(name="points",nullable = false)
     private int points = 0;   // 사용자의 현재 포인트
+    @Column(name="user_status",nullable = false)
+    @Enumerated(EnumType.STRING)
+    private UserStatus userStatus;
+    @Column(name="is_use",nullable = false)
+    private boolean isUse = true;   // true/false
     @Enumerated(EnumType.STRING)
     @Column(name="user_role",nullable = false)
     private UserRole userRole;
 
     // 생성자
-    private User(String userId, String userName, String password, UserRole userRole) {
+    private User(String userId, String userName, String password, UserStatus userStatus, UserRole userRole) {
         this.userId = userId;
         this.userName = userName;
         this.password = password;
+        this.userStatus = userStatus;
         this.userRole = userRole;
         this.points = 0;
     }
 
     //팩토리 메소드 사용
-    public static User of(String userId, String userName, String password, UserRole userRole) { // ✅ UserRole을 직접 받도록 수정
-        return new User(userId, userName, password, userRole);
+    public static User of(String userId, String userName, String password, UserStatus userStatus, UserRole userRole) { // ✅ UserRole을 직접 받도록 수정
+        return new User(userId, userName, password, userStatus, userRole);
     }
 
     // 포인트 업데이트
@@ -54,4 +61,15 @@ public class User extends BaseEntity {
     public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(this.password);
     }
+
+    public void updateUser(String userName, String password) {
+        this.userName = userName;
+        this.password = password;
+    }
+
+    public void softDelete() {
+        this.isUse = false;
+        this.userStatus = UserStatus.WITHDRAWN; // valueOf 안 써도 됨
+    }
+
 }

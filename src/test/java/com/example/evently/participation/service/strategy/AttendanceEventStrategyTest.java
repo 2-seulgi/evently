@@ -6,6 +6,7 @@ import com.example.evently.participation.repository.EventParticipationRepository
 import com.example.evently.point.service.PointService;
 import com.example.evently.user.domain.User;
 import com.example.evently.user.domain.enums.UserRole;
+import com.example.evently.user.domain.enums.UserStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,7 +53,7 @@ class AttendanceEventStrategyTest {
     @BeforeEach
     void setup() {
         event = Event.of("출석", "출석이벤트", LocalDateTime.now(), LocalDateTime.now().plusDays(1), 100, EventType.CHECKIN);
-        user = User.of("testId", "테스터", "pw123", UserRole.USER);
+        user = User.of("testId", "테스터", "pw123", UserStatus.ACTIVE, UserRole.USER);
         lenient().when(redissonClient.getLock(anyString())).thenReturn(lock);
     }
 
