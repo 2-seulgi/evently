@@ -1,6 +1,7 @@
 package com.example.evently.user.dto;
 
 import com.example.evently.user.domain.User;
+import com.example.evently.user.domain.enums.UserRole;
 import com.example.evently.user.domain.enums.UserStatus;
 
 import java.time.LocalDateTime;
@@ -11,6 +12,7 @@ public record UserResponseDto(
         String userName,
         int points,
         boolean isUse,
+        UserRole userRole,
         UserStatus userStatus,
         LocalDateTime regDate,
         LocalDateTime chgDate
@@ -22,6 +24,7 @@ public record UserResponseDto(
                 user.getUserName(),
                 user.getPoints(),
                 user.isUse(),
+                user.getUserRole(),
                 user.getUserStatus(),
                 user.getRegDate(),
                 user.getChgDate()

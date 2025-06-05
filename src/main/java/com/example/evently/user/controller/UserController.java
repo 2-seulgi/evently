@@ -41,6 +41,11 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userDetails.getUsername(), userRequestDto));
     }
 
+    /**
+     * 마이페이지 - 회원 탈퇴
+     * @param userDetails
+     * @return
+     */
     @DeleteMapping
     public ResponseEntity<SuccessResponseDto> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
         try {
