@@ -1,7 +1,10 @@
 package com.example.evently.user.controller;
 
+import com.example.evently.user.domain.User;
+import com.example.evently.user.dto.UserRequestDto;
 import com.example.evently.user.dto.UserResponseDto;
 import com.example.evently.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -9,10 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,6 +24,19 @@ public class AdminUserController {
 
     private final UserService userService;
 
+    /**
+     * 관리자 유저 리스트
+     * @param userId
+     * @param userName
+     * @param userRole
+     * @param isUse
+     * @param userStatus
+     * @param page
+     * @param size
+     * @param sortBy
+     * @param direction
+     * @return
+     */
     @GetMapping
     public ResponseEntity<Page<UserResponseDto>> getAllUsers(
             @RequestParam(required = false)String userId,
@@ -44,5 +57,38 @@ public class AdminUserController {
 
         return ResponseEntity.ok(users);
     }
+
+    /**
+     * 관리자 유저 상세
+     * @param userId
+     * @return
+     */
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserResponseDto> getUser(@PathVariable String userId) {
+        return ResponseEntity.ok(userService.findByUserId(userId));
+    }
+
+    /**
+     * 관리자 유저 수정
+     * @param userId
+     * @param userRequestDto
+     * @return
+     */
+    @PutMapping("/{userId}")
+    public ResponseEntity<UserResponseDto> updateUser(@PathVariable String userId, @Valid @RequestBody UserRequestDto userRequestDto) {
+        return ResponseEntity.ok(userService.updateUser(userId, userRequestDto));
+    }
+
+    /**
+     * 관리자 회원 탈퇴 처리
+     * @param userId
+     * @return
+     */
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Void> deleteUser(@PathVariable String userId) {
+        userService.softDeleteUser(userId);
+        return ResponseEntity.noContent().build();
+    }
+
 
 }
