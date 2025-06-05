@@ -2,6 +2,7 @@ package com.example.evently.participation.service.strategy;
 
 import com.example.evently.event.domain.Event;
 import com.example.evently.event.domain.enums.EventType;
+import com.example.evently.participation.domain.EventParticipation;
 import com.example.evently.participation.repository.EventParticipationRepository;
 import com.example.evently.point.service.PointService;
 import com.example.evently.user.domain.User;
@@ -21,11 +22,12 @@ import java.security.cert.TrustAnchor;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class AttendanceEventStrategyTest {
@@ -81,6 +83,29 @@ class AttendanceEventStrategyTest {
         // when & then
         assertThrows(IllegalStateException.class, () -> strategy.participate(event, user));
     }
+
+    @Test
+    void 출석_정상참여_성공() throws InterruptedException {
+        // given
+        given(participationRepository.existsByUserAndEventAndRegDateBetween(
+                any(), any(), any(), any()
+        )).willReturn(false); // 1일 1회 출석체크 - 아직 출석 안함
+        given(lock.tryLock(0, 5, TimeUnit.SECONDS)).willReturn(true); // 락 획득 성공
+        // 락 해제 조건
+        given(lock.isHeldByCurrentThread()).willReturn(true);
+
+        // when
+        int point = strategy.participate(event, user);
+
+        // then
+        assertThat(point).isEqualTo(event.getPointReward());
+        verify(participationRepository).save(any(EventParticipation.class));
+        verify(pointService).earnPoints(eq(user), eq(event), eq(point), anyString());
+        verify(lock).lock();
+
+    }
+
+
 
 
 }

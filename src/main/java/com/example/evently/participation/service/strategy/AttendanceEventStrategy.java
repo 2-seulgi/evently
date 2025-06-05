@@ -70,7 +70,7 @@ public class AttendanceEventStrategy implements ParticipationStrategy {
         } catch (InterruptedException e) {
             throw new RuntimeException("참여 중 오류가 발생했습니다.");
         } finally {
-            // null일 경우나 락이 내가 가진 게 아닐 경우 예외 발생 막기
+            // null이 아니고, 내가 락을 가지고 있을 때 해제
             if (lock != null && lock.isHeldByCurrentThread()) {
                 lock.unlock();
             }
