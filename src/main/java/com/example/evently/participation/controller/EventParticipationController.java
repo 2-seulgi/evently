@@ -61,7 +61,7 @@ public class EventParticipationController {
     @SecurityRequirement(name = "JWT")
     @Operation(summary = "이벤트 참여", description = "사용자가 특정 이벤트에 참여 합니다." +
     "참여 성공 시 포인트가 지급되며, 중복 참여는 방지됩니다. ")
-    @PostMapping("/me/participation/{eventId}")
+    @PostMapping("/me/participation/{eventSn}")
     public ResponseEntity<?> participateInEvent(
             @PathVariable Long eventSn,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
