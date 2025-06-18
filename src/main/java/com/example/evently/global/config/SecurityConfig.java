@@ -35,6 +35,10 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable())) //  H2 콘솔 UI 표시 허용
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**"
+                        ).permitAll()
                         .requestMatchers("/h2-console/**").permitAll() // H2 콘솔 접근 허용
                         .requestMatchers("/events/**").permitAll() // 이벤트 등록용 임시로 추가
                         // .requestMatchers(HttpMethod.GET, "/events/**").permitAll() // 리스트 & 상세 조회는 허용

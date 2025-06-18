@@ -1,9 +1,10 @@
 package com.example.evently.user.controller;
 
-import com.example.evently.user.domain.User;
 import com.example.evently.user.dto.UserRequestDto;
 import com.example.evently.user.dto.UserResponseDto;
 import com.example.evently.user.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,12 +15,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/admin/users")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
+@Tag(name="관리자에서 사용자의 리스트를 조회하는 API. ", description = "")
 public class AdminUserController {
 
     private final UserService userService;
@@ -37,6 +37,8 @@ public class AdminUserController {
      * @param direction
      * @return
      */
+    @Operation(summary = "관리자가 회원 가입한 사람을 조회하는 API", description = "회원 가입한 회원을 페이징 형태로 조회합니다. " +
+            "유저 아이디, 이름, 권한, 사용여부, 상태 검색이 가능합니다. ")
     @GetMapping
     public ResponseEntity<Page<UserResponseDto>> getAllUsers(
             @RequestParam(required = false)String userId,
@@ -63,6 +65,7 @@ public class AdminUserController {
      * @param userId
      * @return
      */
+    @Operation(summary = "관리자가 회원 가입한 사람의 상세 정보를 조회하는 API", description = "회원 가입한 회원의 상세 정보를 조회합니다." )
     @GetMapping("/{userId}")
     public ResponseEntity<UserResponseDto> getUser(@PathVariable String userId) {
         return ResponseEntity.ok(userService.findByUserId(userId));
@@ -74,6 +77,7 @@ public class AdminUserController {
      * @param userRequestDto
      * @return
      */
+    @Operation(summary = "관리자가 회원정보를 수정하는 API", description = "회원 가입한 회원의 상세 정보를 수정합니다." )
     @PutMapping("/{userId}")
     public ResponseEntity<UserResponseDto> updateUser(@PathVariable String userId, @Valid @RequestBody UserRequestDto userRequestDto) {
         return ResponseEntity.ok(userService.updateUser(userId, userRequestDto));
@@ -84,6 +88,7 @@ public class AdminUserController {
      * @param userId
      * @return
      */
+    @Operation(summary = "관리자가 회원정보를 삭제하는 API", description = "회원 가입한 회원의 정보를 삭제합니다." )
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable String userId) {
         userService.softDeleteUser(userId);

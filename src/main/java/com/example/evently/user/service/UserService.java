@@ -17,12 +17,12 @@ public class UserService {
 
     /**
      * 사용자 정보 조회
-     * @param username
+     * @param userId
      * @return
      */
     @Transactional(readOnly = true)
-    public UserResponseDto findByUserId(String username) {
-        User user = userRepository.findByUserId(username).orElseThrow(()-> new IllegalArgumentException("정보를 찾을 수 없습니다 : " + username));
+    public UserResponseDto findByUserId(String userId) {
+        User user = userRepository.findByUserId(userId).orElseThrow(()-> new IllegalArgumentException("정보를 찾을 수 없습니다 : " + userId));
         return UserResponseDto.fromEntity(user);
     }
 

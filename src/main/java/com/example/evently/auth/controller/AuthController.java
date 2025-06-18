@@ -6,6 +6,9 @@ import com.example.evently.user.dto.UserRequestDto;
 import com.example.evently.user.dto.UserResponseDto;
 import com.example.evently.user.repository.UserRepository;
 import com.example.evently.user.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,10 +21,10 @@ import java.util.Map;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@Tag(name = "인증 API", description = "회원가입 및 로그인 인증 관련 API 입니다.")
 public class AuthController {
 
     private final AuthService authService;
-    private final UserService userService;
     private final UserRepository userRepository;
 
 
@@ -30,6 +33,7 @@ public class AuthController {
      * @param requestDto
      * @return
      */
+    @Operation(summary = "로그인", description = "아이디 및 비밀번호를 확인하고 JWT 토큰을 발급합니다.")
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@Valid @RequestBody LoginRequestDto requestDto) {
         return ResponseEntity.ok(authService.login(requestDto.userId(), requestDto.password()));
@@ -40,6 +44,7 @@ public class AuthController {
      * @param userRequestDto
      * @return
      */
+    @Operation(summary = "회원가입", description = "중복 아이디를 확인하고 비밀번호를 암호화 한 후 회원 정보를 저장합니다.")
     @PostMapping
     public ResponseEntity<UserResponseDto> registerUser(@Valid @RequestBody UserRequestDto userRequestDto) {
         UserResponseDto responseDto = authService.registerUser(userRequestDto);
@@ -48,12 +53,15 @@ public class AuthController {
 
     /**
      * 중복 체크
-     * @param email
+     * @param userId
      * @return
      */
+    @Operation(summary = "아이디 중복 체크", description = "중복 아이디를 체크 합니다.")
     @GetMapping("/check-email")
-    public ResponseEntity<Map<String, Boolean>> checkEmailDuplicate(@RequestParam String email) {
-        boolean exists = userRepository.existsByUserId(email);
+    public ResponseEntity<Map<String, Boolean>> checkIdDuplicate(
+            @Parameter(description = "사용자 아이디", example = "userId@example.com")
+            @RequestParam String userId) {
+        boolean exists = userRepository.existsByUserId(userId);
         Map<String, Boolean> result = new HashMap<>();
         result.put("duplicate", exists);
         return ResponseEntity.ok(result);

@@ -18,7 +18,6 @@ import org.redisson.api.RedissonClient;
 import org.redisson.api.RLock;
 import org.springframework.data.redis.core.RedisTemplate;
 
-import java.security.cert.TrustAnchor;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 

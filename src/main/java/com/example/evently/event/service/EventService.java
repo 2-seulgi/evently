@@ -45,11 +45,13 @@ public class EventService {
 
     // 이벤트  조회
     @Transactional(readOnly = true)
-    public Page<EventResponseDto> getEvents(String title, LocalDateTime startDate, LocalDateTime endDate, Integer minPoint, Pageable pageable) {
+    public Page<EventResponseDto> getEvents(String title, LocalDateTime startDate, LocalDateTime endDate, Integer minPoint, Boolean includeDeleted, Pageable pageable) {
         BooleanBuilder builder = buildSearchPredicate(title, startDate, endDate, minPoint);
 
-        //  Soft Delete된 이벤트는 제외
-        builder.and(QEvent.event.isDeleted.eq(false));
+        //  조건적으로 삭제 여부 필터 적용
+        if (includeDeleted == null || !includeDeleted) {
+            builder.and(QEvent.event.isDeleted.eq(false));
+        }
 
         //  검색 조건이 없으면 전체 리스트 반환, 있으면 필터링된 결과 반환
         return eventRepository.findAll(builder, pageable)

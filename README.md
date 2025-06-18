@@ -51,3 +51,4 @@ erDiagram
   SURVEY_QUESTION ||--o{ SURVEY_RESPONSE : answered_by_future
   USER ||--o{ SURVEY_RESPONSE           : submits_future
 ```
+

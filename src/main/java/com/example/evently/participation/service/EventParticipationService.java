@@ -55,7 +55,7 @@ public class EventParticipationService {
      * @return
      */
     public Page<EventParticipationResponseDto> getUserParticipationHistory(Long userSn, String eventName, LocalDateTime startDate, LocalDateTime endDate, int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "regDate")); //페이지 번호를 0부터 시작하도록 변환 (Spring Data JPA는 0-based index 사용)
+        Pageable pageable = PageRequest.of(page , size, Sort.by(Sort.Direction.DESC, "regDate")); //페이지 번호를 0부터 시작하도록 변환 (Spring Data JPA는 0-based index 사용)
         return eventParticipationQueryRepository.findUserParticipationHistory(userSn, eventName, startDate, endDate, pageable);
     }
 
@@ -68,7 +68,7 @@ public class EventParticipationService {
      * @return
      */
     public Page<EventParticipantResponseDto> getParticipantsByEvent(Long eventId, String userName, int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "regDate"));
+        Pageable pageable = PageRequest.of(page , size, Sort.by(Sort.Direction.DESC, "regDate"));
         return eventParticipationQueryRepository.findParticipantsByEventId(eventId, userName, pageable);
     }
 

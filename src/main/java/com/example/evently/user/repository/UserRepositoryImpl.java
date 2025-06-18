@@ -5,7 +5,6 @@ import com.example.evently.user.domain.enums.UserRole;
 import com.example.evently.user.domain.enums.UserStatus;
 import com.example.evently.user.dto.UserResponseDto;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.QueryFactory;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
