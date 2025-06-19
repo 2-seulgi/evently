@@ -18,4 +18,5 @@ public record EventParticipationResponseDto(
         String eventTitle,
         @Schema(description = "이벤트 참여 일시", example = "2025-07-01T09:00:00")
         LocalDateTime regDate) {
+
 }

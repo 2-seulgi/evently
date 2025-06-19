@@ -33,6 +33,12 @@ public class EventParticipationService {
     private final EventParticipationRepository eventParticipationRepository;
     private final EventParticipationQueryRepository eventParticipationQueryRepository;
 
+    /**
+     * 이벤트 참가
+     * @param eventId
+     * @param userSn
+     * @return
+     */
     @Transactional
     public int participateInEvent(Long eventId, Long userSn) {
         Event event = eventRepository.findById(eventId)
