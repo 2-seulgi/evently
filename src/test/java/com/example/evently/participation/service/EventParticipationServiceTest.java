@@ -3,9 +3,11 @@ package com.example.evently.participation.service;
 import com.example.evently.event.domain.Event;
 import com.example.evently.event.domain.enums.EventType;
 import com.example.evently.event.repository.EventRepository;
+import com.example.evently.participation.domain.EventParticipation;
 import com.example.evently.participation.dto.EventParticipantResponseDto;
 import com.example.evently.participation.dto.EventParticipationResponseDto;
 import com.example.evently.participation.repository.EventParticipationQueryRepository;
+import com.example.evently.participation.repository.EventParticipationRepository;
 import com.example.evently.participation.service.strategy.AttendanceEventStrategy;
 import com.example.evently.participation.service.strategy.StrategyFactory;
 import com.example.evently.user.domain.User;
@@ -19,9 +21,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,6 +46,9 @@ class EventParticipationServiceTest {
     private UserRepository userRepository;
 
     @Mock
+    private EventParticipationRepository eventParticipationRepository;
+
+    @Mock
     private EventParticipationQueryRepository eventParticipationQueryRepository;
 
     @Mock
@@ -55,6 +62,7 @@ class EventParticipationServiceTest {
     @BeforeEach
     void setup() {
         event = Event.of("출석체크 이벤트", "6월 출석체크 이벤트", LocalDateTime.now(), LocalDateTime.now().plusDays(1), 10, EventType.CHECKIN);
+        ReflectionTestUtils.setField(event, "id", 1L);
         user = User.of("testId", "테스터", "pw123", UserStatus.ACTIVE, UserRole.USER);
     }
 
@@ -175,6 +183,24 @@ class EventParticipationServiceTest {
 
 
     @Test
-    void getTodayCheckInEventIds() {
+    void 오늘_기준_출석체크_확인() {
+        //given : 오늘 출석이벤트 참여 기록이 1건 있음
+        given(eventParticipationRepository.findByUserIdAndEvent_EventTypeAndRegDate(
+                eq(user.getId()), eq(EventType.CHECKIN), any(LocalDateTime.class))
+        ).willReturn(List.of(
+                new EventParticipation(user, event)
+        ));
+
+        //when : 출석 체크 이벤트 ID 목록 조회
+        List<Long> result = eventParticipationService.getTodayCheckInEventIds(user.getId());
+
+        // then: 참여한 이벤트 ID 리스트에 정확히 1개의 ID가 있고, 예상한 이벤트 ID와 일치하는지 검증
+        assertThat(result).hasSize(1); // 참여 기록이 1건이어야 함
+        assertThat(result.get(0)).isEqualTo(1L); // 테스트 대상 이벤트의 ID가 1L이라고 가정
+
+        // 그리고 해당 Repository 메서드가 정확히 한 번 호출되었는지 확인
+        verify(eventParticipationRepository).findByUserIdAndEvent_EventTypeAndRegDate(
+                eq(user.getId()), eq(EventType.CHECKIN), any(LocalDateTime.class));
+
     }
 }
