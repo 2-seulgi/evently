@@ -47,18 +47,88 @@
 ---
 
 ## 🔧 도메인 구조
-```mermaid
-erDiagram
-  USER ||--o{ EVENT_PARTICIPATION       : participates
-  EVENT ||--o{ EVENT_PARTICIPATION      : has_participation
-  USER }|..|{ POINT_HISTORY             : accumulates
 
-  %% — 미래 확장
-  EVENT ||--o{ SURVEY_QUESTION          : has_questions_future
-  SURVEY_QUESTION ||--o{ SURVEY_RESPONSE : answered_by_future
-  USER ||--o{ SURVEY_RESPONSE           : submits_future
-```
+<details> 
+  <summary>ERD (DBML)</summary>
+
+    Table event {
+    id BIGINT  [primary key]
+    title VARCHAR(100)
+    description TEXT
+    start_date TIMESTAMP
+    end_date TIMESTAMP
+    point_reward INT
+    is_deleted BOOLEAN [default: false]
+    event_type VARCHAR(20)  [note: 'SURVEY, QUIZ, GIVEAWAY, CHECKIN, OTHER']
+    reward_type VARCHAR(20)  [note: 'FIRST_COME, DRAW, INSTANT']
+    max_participants INT
+    current_participants INT
+    reg_date TIMESTAMP
+    chg_date TIMESTAMP
+    }
+    
+    Table users {
+    id BIGINT [primary key]
+    login_id  VARCHAR(100) [unique]
+    user_name VARCHAR(100)
+    password VARCHAR(100)
+    points INT  [default:  0]
+    user_role VARCHAR(100)
+    user_status VARCHAR(100)
+    is_use BOOLEAN
+    reg_date TIMESTAMP
+    chg_date TIMESTAMP
+    withdrawal_dt TIMESTAMP
+    }
+    
+    Table event_participation {
+    id BIGINT [primary key]
+    user_id  BIGINT
+    event_id  BIGINT
+    reg_date TIMESTAMP
+    chg_date TIMESTAMP
+    }
+    
+    Table point_history {
+    id BIGINT [primary key]
+    user_id  BIGINT
+    event_id  BIGINT
+    event_type VARCHAR(20)
+    points INT [default: 0]
+    reg_date TIMESTAMP
+    chg_date TIMESTAMP
+    }
+    
+    Table event_reward_history {
+    id BIGINT [primary key]
+    user_id  BIGINT
+    event_id  BIGINT
+    reward_type VARCHAR(20)
+    reward_item VARCHAR(150)
+    reward_status VARCHAR(30) [note: 'WIN, LOSE, PENDING']
+    points INT [default: 0]
+    reg_date TIMESTAMP
+    chg_date TIMESTAMP
+    }
+    
+    
+    
+    Ref: "users"."id" < "event_participation"."user_id"
+    
+    Ref: "event_participation"."event_id" > "event"."id"
+    
+    Ref: "users"."id" < "point_history"."user_id"
+    
+    Ref: "event"."id" < "point_history"."event_id"
+    
+    Ref: "users"."id" < "event_reward_history"."user_id"
+    
+    Ref: "event"."id" < "event_reward_history"."event_id"
+
+</details>
+
 ---
+
 ## 📄 API 문서 (Swagger)
 - [Swagger UI (로컬)](http://localhost:8080/swagger-ui/index.html)
 - JWT 인증이 필요한 API는 상단에 "🔒 Authorize" 버튼을 통해 토큰을 입력 후 테스트 할 수 있습니다.

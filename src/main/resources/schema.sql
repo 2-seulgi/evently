@@ -5,8 +5,9 @@ CREATE TABLE IF NOT EXISTS event (
                                                     start_date TIMESTAMP NOT NULL,
                                                     end_date TIMESTAMP NOT NULL,
                                                     point_reward INT NOT NULL,
-                                                    is_deleted BOOLEAN NOT NULL,
+                                                    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
                                                     event_type VARCHAR(20) NOT NULL,
+                                                    reward_type VARCHAR(20) NOT NULL,
                                                     max_participants INT,
                                                     current_participants INT NOT NULL,
                                                     reg_date TIMESTAMP NOT NULL,
@@ -40,17 +41,19 @@ CREATE TABLE IF NOT EXISTS point_history  (
                                                     id BIGINT AUTO_INCREMENT PRIMARY KEY,
                                                     user_id BIGINT,
                                                     event_id BIGINT,
+                                                    event_type VARCHAR(20) NOT NULL,
                                                     points INT NOT NULL DEFAULT 0,
-                                                    reason VARCHAR(150) NOT NULL ,
-                                                    created_at TIMESTAMP NOT NULL
+                                                    reg_date TIMESTAMP NOT NULL,
+                                                    chg_date TIMESTAMP NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS event_reward_history (
+CREATE TABLE IF NOT EXISTS event_reward_histories  (
                                                     id BIGINT AUTO_INCREMENT PRIMARY KEY,
                                                     user_id BIGINT NOT NULL,
                                                     event_id BIGINT NOT NULL,
-                                                    reward_type VARCHAR(50) NOT NULL,      -- 예: FIRST_COME, DRAW, INSTANT
+                                                    reward_type VARCHAR(20) NOT NULL,      -- 예: FIRST_COME, DRAW, INSTANT
                                                     reward_item VARCHAR(150),              -- 예: "CU 3천원 쿠폰", "에어팟", "500포인트"
                                                     reward_status VARCHAR(30) NOT NULL,    -- 예: WIN, LOSE, PENDING
-                                                    created_at TIMESTAMP NOT NULL
+                                                    reg_date TIMESTAMP NOT NULL,
+                                                    chg_date TIMESTAMP NOT NULL
     );
