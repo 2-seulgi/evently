@@ -5,7 +5,6 @@
 - [🔍 참여 로직 상세](#🔍-참여-로직-상세)
 - [🔧 도메인 구조](#🔧-도메인-구조)
 - [📄 API 문서](#📄-api-문서)
-- [🚀 설치 및 실행](#🚀-설치-및-실행)
 - [✅ 테스트](#✅-테스트)
 - [📦 배포](#📦-배포)
 
@@ -47,9 +46,9 @@
 ---
 
 ## 🔧 도메인 구조
-
+![ERD](./assets/erd.png)
 <details> 
-  <summary>ERD (DBML)</summary>
+  <summary> DBML</summary>
 
     Table event {
     id BIGINT  [primary key]
@@ -134,7 +133,7 @@
 - JWT 인증이 필요한 API는 상단에 "🔒 Authorize" 버튼을 통해 토큰을 입력 후 테스트 할 수 있습니다.
 - 사용자 / 관리자 권한에 따라 접근 가능한 API가 다릅니다.
 
-### ✅ JWT 인증 테스트 방법
+### 💡 JWT 인증 테스트 방법
 1. `/auth/login` API를 통해 토큰을 발급받습니다.
 2. Swagger 상단 "🔒 Authorize" 버튼을 클릭합니다.
 3. `Bearer <JWT 토큰>` 형태로 입력합니다.
