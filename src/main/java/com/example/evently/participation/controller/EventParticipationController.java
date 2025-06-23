@@ -46,9 +46,9 @@ public class EventParticipationController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        Long userSn = userDetails.getUser().getId();
+        Long userId = userDetails.getUser().getId();
         Page<EventParticipationResponseDto> history = eventParticipationService.getUserParticipationHistory(
-                userSn, eventTitle, startDate, endDate, page, size
+                userId, eventTitle, startDate, endDate, page, size
         );
         return ResponseEntity.ok(history);
     }

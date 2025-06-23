@@ -25,7 +25,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom  {
 
     @Override
     public Page<UserResponseDto> findAllByAdminFilters(
-            String userId,
+            String loginId ,
             String userName,
             String userRole,
             String isUse,
@@ -36,8 +36,8 @@ public class UserRepositoryImpl implements UserRepositoryCustom  {
 
         BooleanBuilder builder = new BooleanBuilder();
 
-        if(userId != null && !userId.isEmpty()) {
-            builder.and(user.userId.containsIgnoreCase(userId));
+        if(loginId != null && !loginId.isEmpty()) {
+            builder.and(user.loginId.containsIgnoreCase(loginId));
         }
 
         if(userName != null && !userName.isEmpty()) {
@@ -71,7 +71,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom  {
         List<UserResponseDto> results = jpaQueryFactory
                 .select(Projections.constructor(UserResponseDto.class,
                         user.id,                // ① Long id
-                        user.userId,            // ② String userId
+                        user.loginId,            // ② String loginId
                         user.userName,          // ③ String userName
                         user.points,            // ④ int points
                         user.isUse,             // ⑤ boolean isUse

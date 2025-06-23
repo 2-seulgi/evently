@@ -67,7 +67,7 @@ class EventParticipationServiceTest {
     }
 
     @Test
-    void 이벤트_참여시_출석_전략_정상호출() {
+    void 이벤트_참여시_출석전략_위임_및_포인트_지급_확인() {
 
         //given
         given(eventRepository.findById(anyLong())).willReturn(Optional.of(event));
@@ -79,9 +79,8 @@ class EventParticipationServiceTest {
         int point = eventParticipationService.participateInEvent(1L, 1L);
 
         //then
-        assertThat(point).isEqualTo(10);
-        verify(attendanceStrategy).participate(eq(event), eq(user));
-
+        verify(attendanceStrategy).participate(eq(event), eq(user)); // 위임 확인
+        assertThat(point).isEqualTo(event.getPointReward());         // 포인트 확인
     }
 
     @Test
@@ -92,26 +91,26 @@ class EventParticipationServiceTest {
         Pageable pageable = PageRequest.of(0 , 10, Sort.by(Sort.Direction.DESC, "regDate"));
         // 응답 DTo 실제 참여 내역
         EventParticipationResponseDto dto = new EventParticipationResponseDto(
-                1L,                          // eventId
+                1L,                    // eventId
                 "출석체크 이벤트",               // eventName
-                LocalDateTime.now()               // 참여일시
+                LocalDateTime.now()           // 참여일시
         );
         // 가짜 응답 page 객체 생성(1건 참여 내역)
         Page<EventParticipationResponseDto> mockPage= new PageImpl<>(Collections.singletonList(dto));
 
         // repository 호출 시 이 mockPage를 리턴하도록 설정
         given(eventParticipationQueryRepository.findUserParticipationHistory(
-                eq(1L),       // 사용자 ID
-                anyString(),  // 이벤트 이름 (anyString으로 처리)
-                any(),        // 시작일 (LocalDateTime)
-                any(),        // 종료일
-                eq(pageable)  // 페이징 정보
+                eq(1L),        // 사용자 ID
+                anyString(),        // 이벤트 이름 (anyString으로 처리)
+                any(),              // 시작일 (LocalDateTime)
+                any(),              // 종료일
+                eq(pageable)        // 페이징 정보
         )).willReturn(mockPage);
 
         // when : 실제 서비스 메서드 호출
         Page<EventParticipationResponseDto> result =
                 eventParticipationService.getUserParticipationHistory(
-                        1L,                          // userSn
+                        1L,                          // userId
                         "출석",                       // eventName (검색용)
                         LocalDateTime.now().minusDays(3), // 검색 시작일
                         LocalDateTime.now(),              // 검색 종료일
@@ -130,6 +129,11 @@ class EventParticipationServiceTest {
 
     }
 
+/*    @Test
+    void 존재하지_않는_이벤트일_경우_예외(){
+        given (eventRepository.findById(anyLong())).willReturn(Optional.empty());
+    }*/
+
     @Test
     void 이벤트별_참가자_조회() {
         //given
@@ -137,7 +141,7 @@ class EventParticipationServiceTest {
         Pageable pageable = PageRequest.of(0 , 10, Sort.by(Sort.Direction.DESC, "regDate"));
         // 응답 DTo 실제 참여 내역
         EventParticipantResponseDto dto = new EventParticipantResponseDto(
-                1L,                          // userSn
+                1L,                          // userId
                 "테스터",               // userName
                 LocalDateTime.now()               // 참여일시
         );
@@ -154,7 +158,7 @@ class EventParticipationServiceTest {
         // when : 실제 서비스 메서드 호출
         Page<EventParticipantResponseDto> result =
                 eventParticipationService.getParticipantsByEvent(
-                        1L,                          // userSn
+                        1L,                          // userId
                         "테스터",                       // userName (검색용)
                         0,                           // page
                         10                           // size
@@ -171,7 +175,7 @@ class EventParticipationServiceTest {
     }
 
     @Test
-    void 이벤트별_참가자_없을경우_빈페이지_리턴() {
+    void 이벤트별_참가자_없을때_빈_결과_반환() {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "regDate"));
         given(eventParticipationQueryRepository.findParticipantsByEventId(eq(1L), anyString(), eq(pageable)))
                 .willReturn(Page.empty());
@@ -183,7 +187,7 @@ class EventParticipationServiceTest {
 
 
     @Test
-    void 오늘_기준_출석체크_확인() {
+    void 오늘_출석체크_이벤트ID_조회_성공() {
         //given : 오늘 출석이벤트 참여 기록이 1건 있음
         given(eventParticipationRepository.findByUserIdAndEvent_EventTypeAndRegDate(
                 eq(user.getId()), eq(EventType.CHECKIN), any(LocalDateTime.class))

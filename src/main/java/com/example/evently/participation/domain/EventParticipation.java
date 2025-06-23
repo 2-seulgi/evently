@@ -20,7 +20,7 @@ public class EventParticipation extends BaseEntity { // 이벤트 참여 기록
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_sn", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user; // 참여한 사용자
 
     @ManyToOne(fetch = FetchType.LAZY)

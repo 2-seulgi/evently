@@ -50,7 +50,7 @@ public class AttendanceEventStrategy implements ParticipationStrategy {
             lock = redissonClient.getLock(key); // 사용자 단위로 락 획득
             // waitTime은 락이 풀릴 때까지 기다리는 시간, leaseTime 락을 점유할 수 있는 시간
             // 출석 체크의 경우 중복체크가 중요하기 때문에 대기시간 짧아도 괜찮다고 판단해서 0으로 잡음
-            if (!lock.tryLock(0, 5, TimeUnit.SECONDS)) { //락을 바로 시도하고 얻는 경우 10초 보유
+            if (!lock.tryLock(0, 5, TimeUnit.SECONDS)) { //락을 바로 시도하고 얻는 경우 5초 보유
                 throw new IllegalStateException("이미 참여 중입니다.");
             }
 
@@ -82,6 +82,11 @@ public class AttendanceEventStrategy implements ParticipationStrategy {
         return eventType == EventType.CHECKIN;
     }
 
+    /**
+     * 오늘 출석체크 했는지 확인
+     * @param user
+     * @param event
+     */
     private void validateCheckInToday(User user, Event event) {
         LocalDateTime startOfToday = LocalDate.now().atStartOfDay();
         LocalDateTime endOfToday = LocalDate.now().atTime(LocalTime.MAX);

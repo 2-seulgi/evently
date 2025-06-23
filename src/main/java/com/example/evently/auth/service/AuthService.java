@@ -9,7 +9,6 @@ import com.example.evently.user.dto.UserResponseDto;
 import com.example.evently.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,18 +26,18 @@ public class AuthService {
 
     /**
      * 로그인
-     * @param userId
+     * @param loginId
      * @param password
      * @return
      */
-    public Map<String, String> login(String userId, String password) {
-        if (userId == null) {
-            throw new IllegalArgumentException("userId cannot be null");
+    public Map<String, String> login(String loginId, String password) {
+        if (loginId == null) {
+            throw new IllegalArgumentException("loginId cannot be null");
         }
-        userId = userId.trim(); // 공백 제거
+        loginId = loginId.trim(); // 공백 제거
 
         // 사용자 조회
-        Optional<User> userOptional = userRepository.findByUserId(userId);
+        Optional<User> userOptional = userRepository.findByLoginId(loginId);
         if (!userOptional.isPresent()) {
             throw new IllegalArgumentException("아이디 또는 비밀번호가 잘못되었습니다.");
         }
@@ -51,14 +50,14 @@ public class AuthService {
         }
 
         // JWT 토큰 생성 (권한 포함!)
-        String token = jwtUtil.generateToken(user.getUserId(), user.getUserRole());
+        String token = jwtUtil.generateToken(user.getLoginId(), user.getUserRole());
 
         // 응답 맵 구성
         Map<String, String> response = new HashMap<>();
         response.put("token", token);
         response.put("role", user.getUserRole().name());
-        response.put("userSn", String.valueOf(user.getId()));
-        response.put("userId", user.getUserId());
+        response.put("userId", String.valueOf(user.getId()));
+        response.put("loginId", user.getLoginId());
         response.put("userName", user.getUserName());
 
         return response;
@@ -73,7 +72,7 @@ public class AuthService {
     @Transactional
     public UserResponseDto registerUser(UserRequestDto userRequestDto) {
         // 1. 중복 검사
-        if (userRepository.existsByUserId(userRequestDto.userId())) {
+        if (userRepository.existsByLoginId(userRequestDto.loginId())) {
             throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
         }
 
@@ -81,7 +80,7 @@ public class AuthService {
         String encryptedPassword = passwordEncoder.encode(userRequestDto.password());
 
         User user = User.of(
-                userRequestDto.userId(),
+                userRequestDto.loginId(),
                 userRequestDto.userName(),
                 encryptedPassword,
                 UserStatus.ACTIVE,

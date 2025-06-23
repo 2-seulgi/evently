@@ -25,15 +25,15 @@ public class PointController {
     private final PointService pointService;
 
     /**
-     * 로그인한 사용자의 userSn(ID)를 기반으로 본인 포인트를 조회
+     * 로그인한 사용자의 userId(seq)를 기반으로 본인 포인트를 조회
      * @param userDetails
      * @return
      */
-    @Operation(summary = "로그인한 사용자의 본인 포인트를 조회하는 API", description = "로그인한 사용자의 userSn(ID)를 기반으로 본인 포인트를 조회합니다." )
+    @Operation(summary = "로그인한 사용자의 본인 포인트를 조회하는 API", description = "로그인한 사용자의 userId(seq)를 기반으로 본인 포인트를 조회합니다." )
     @GetMapping("/points")
     public ResponseEntity<?> getUserPoints(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        Long userSn = userDetails.getUser().getId(); // 로그인한 사용자의 PK
-        int points = pointService.getUserPoints(userSn);
+        Long userId = userDetails.getUser().getId(); // 로그인한 사용자의 PK
+        int points = pointService.getUserPoints(userId);
         return ResponseEntity.ok(Map.of("points", points)); // 키가 포함된 객체 응답
     }
 
@@ -41,14 +41,14 @@ public class PointController {
      * 사용자 포인트 내역 조회 API
      */
     @Operation(summary = "적립된 포인트 히스토리를 조회하는 API", description = "로그인한 사용자가 적립한 포인트 내역을 페이징 형태로 조회힙니다." )
-    @GetMapping("/{userSn}")
+    @GetMapping("/{userId}")
     public ResponseEntity<Page<PointHistoryResponseDto>> getPointHistory(
-            @PathVariable Long userSn,
+            @PathVariable Long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size){
 
         Pageable pageable = PageRequest.of(page , size, Sort.by(Sort.Direction.DESC," createdAt"));
-        Page<PointHistoryResponseDto> points = pointService.getPointHistory(userSn, pageable);
+        Page<PointHistoryResponseDto> points = pointService.getPointHistory(userId, pageable);
 
         return ResponseEntity.ok(points);
 

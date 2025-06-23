@@ -36,14 +36,14 @@ public class EventParticipationService {
     /**
      * 이벤트 참가
      * @param eventId
-     * @param userSn
+     * @param userId
      * @return
      */
     @Transactional
-    public int participateInEvent(Long eventId, Long userSn) {
+    public int participateInEvent(Long eventId, Long userId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(()->new IllegalArgumentException("이벤트를 찾을 수 없습니다."));
-        User user = userRepository.findById(userSn)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
         // 이벤트 타입에 따라 전략 선택 후 참여 로직을 위임함
         ParticipationStrategy strategy = strategyFactory.getStrategy(event.getEventType());
@@ -52,7 +52,7 @@ public class EventParticipationService {
 
     /**
      * 사용자의 참석 이벤트 조회
-     * @param userSn
+     * @param userId
      * @param eventName
      * @param startDate
      * @param endDate
@@ -60,9 +60,9 @@ public class EventParticipationService {
      * @param size
      * @return
      */
-    public Page<EventParticipationResponseDto> getUserParticipationHistory(Long userSn, String eventName, LocalDateTime startDate, LocalDateTime endDate, int page, int size) {
+    public Page<EventParticipationResponseDto> getUserParticipationHistory(Long userId, String eventName, LocalDateTime startDate, LocalDateTime endDate, int page, int size) {
         Pageable pageable = PageRequest.of(page , size, Sort.by(Sort.Direction.DESC, "regDate")); //페이지 번호를 0부터 시작하도록 변환 (Spring Data JPA는 0-based index 사용)
-        return eventParticipationQueryRepository.findUserParticipationHistory(userSn, eventName, startDate, endDate, pageable);
+        return eventParticipationQueryRepository.findUserParticipationHistory(userId, eventName, startDate, endDate, pageable);
     }
 
     /**
@@ -81,12 +81,12 @@ public class EventParticipationService {
 
     /**
      * 오늘 기준 출석체크 확인
-     * @param userSn
+     * @param userId
      * @return
      */
-    public List<Long> getTodayCheckInEventIds(Long userSn) {
+    public List<Long> getTodayCheckInEventIds(Long userId) {
         List<EventParticipation> participation = eventParticipationRepository.findByUserIdAndEvent_EventTypeAndRegDate(
-                userSn, EventType.CHECKIN, LocalDateTime.now());
+                userId, EventType.CHECKIN, LocalDateTime.now());
         return participation.stream()
                 .map(p->p.getEvent().getId()) //각 참여 기록 EventParticipation 객체에서 그 안에 있는 Event의 ID만 추출
                 .distinct()

@@ -22,13 +22,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class EventParticipationQueryRepository {
     private final JPAQueryFactory queryFactory;
-    public Page<EventParticipationResponseDto> findUserParticipationHistory(Long userSn, String eventName, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
+    public Page<EventParticipationResponseDto> findUserParticipationHistory(Long userId, String eventName, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
         QEventParticipation eventParticipation = QEventParticipation.eventParticipation;
         QEvent  event = QEvent.event;
         QUser user = QUser.user; // 유저 엔티티 추가
 
         BooleanBuilder builder = new BooleanBuilder();
-        builder.and(eventParticipation.user.id.eq(userSn)); // 기본적으로 사용자 ID 필터 적용
+        builder.and(eventParticipation.user.id.eq(userId)); // 기본적으로 사용자 ID 필터 적용
 
         // 검색 조건 추가 (이벤트명, 시작 날짜, 종료 날짜)
         if (eventName != null && !eventName.isBlank()) {

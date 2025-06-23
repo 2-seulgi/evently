@@ -39,7 +39,7 @@ public record UserResponseDto(
     public static UserResponseDto fromEntity(User user) {
         return new UserResponseDto(
                 user.getId(),
-                user.getUserId(),
+                user.getLoginId(),
                 user.getUserName(),
                 user.getPoints(),
                 user.isUse(),

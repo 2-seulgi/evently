@@ -12,10 +12,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-
-import java.time.Duration;
 
 @Service
 @RequiredArgsConstructor
@@ -51,17 +48,17 @@ public class PointService {
      * 사용자의 현재 포인트 조회
      * - redis 캐싱 값이 있으면 값 반환
      * - 그렇지 않은 경우 조회후 redis 에 저장
-     * @param userSn
+     * @param userId
      * @return
      */
     @Cacheable(
             value = "userPoints",
-            key = "'user:points:' + #userSn",
+            key = "'user:points:' + #userId",
             unless = "#result == 0" // 결과가 0이면 캐싱 안 함
     )
-    public int getUserPoints(Long userSn){
+    public int getUserPoints(Long userId){
         // redis에 데이터가 없으면 db 조회
-        User user = userRepository.findById(userSn).orElseThrow(()-> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        User user = userRepository.findById(userId).orElseThrow(()-> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         return user.getPoints();
     }
@@ -71,13 +68,13 @@ public class PointService {
      */
     @Cacheable(
             value = "userPoints",  // 캐시 공간 이름
-            key = "'user:points:' + #userSn",  // 저장될 키 (동적으로 생성됨)
+            key = "'user:points:' + #userId",  // 저장될 키 (동적으로 생성됨)
             unless = "#result == null"  // 결과가 null이면 캐시하지 않음
     )
     @Transactional
-    public Page<PointHistoryResponseDto> getPointHistory(Long userSn, Pageable pageable){
+    public Page<PointHistoryResponseDto> getPointHistory(Long userId, Pageable pageable){
         // 사용자 조회
-        User user = userRepository.findById(userSn).orElseThrow(()-> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        User user = userRepository.findById(userId).orElseThrow(()-> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         // 포인트 내역 조회(페이징)
         Page<PointHistory> pointHistories = pointHistoryRepository.findByUserOrderByCreatedAtDesc(user, pageable);
 

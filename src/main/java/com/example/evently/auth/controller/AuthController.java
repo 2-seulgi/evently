@@ -5,7 +5,6 @@ import com.example.evently.auth.service.AuthService;
 import com.example.evently.user.dto.UserRequestDto;
 import com.example.evently.user.dto.UserResponseDto;
 import com.example.evently.user.repository.UserRepository;
-import com.example.evently.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,7 +35,7 @@ public class AuthController {
     @Operation(summary = "로그인", description = "아이디 및 비밀번호를 확인하고 JWT 토큰을 발급합니다.")
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@Valid @RequestBody LoginRequestDto requestDto) {
-        return ResponseEntity.ok(authService.login(requestDto.userId(), requestDto.password()));
+        return ResponseEntity.ok(authService.login(requestDto.loginId(), requestDto.password()));
     }
 
     /**
@@ -53,15 +52,15 @@ public class AuthController {
 
     /**
      * 중복 체크
-     * @param userId
+     * @param loginId
      * @return
      */
     @Operation(summary = "아이디 중복 체크", description = "중복 아이디를 체크 합니다.")
     @GetMapping("/check-email")
     public ResponseEntity<Map<String, Boolean>> checkIdDuplicate(
             @Parameter(description = "사용자 아이디", example = "userId@example.com")
-            @RequestParam String userId) {
-        boolean exists = userRepository.existsByUserId(userId);
+            @RequestParam String loginId) {
+        boolean exists = userRepository.existsByLoginId(loginId);
         Map<String, Boolean> result = new HashMap<>();
         result.put("duplicate", exists);
         return ResponseEntity.ok(result);

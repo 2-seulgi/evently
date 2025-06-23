@@ -9,8 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.EnumSet;
-
 @Entity
 @Getter
 @Table(name = "users")
@@ -19,8 +17,8 @@ public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "user_id", nullable = false, unique = true)
-    private String userId; // 사용자 아이디
+    @Column(name = "login_id", nullable = false, unique = true)
+    private String loginId; // 사용자 아이디
     @Column(name ="user_name", nullable = false)
     private String userName;  // 사용자 이름
     @Column(name="password", nullable = false)
@@ -37,8 +35,8 @@ public class User extends BaseEntity {
     private UserRole userRole;
 
     // 생성자
-    private User(String userId, String userName, String password, UserStatus userStatus, UserRole userRole) {
-        this.userId = userId;
+    private User(String loginId, String userName, String password, UserStatus userStatus, UserRole userRole) {
+        this.loginId = loginId;
         this.userName = userName;
         this.password = password;
         this.userStatus = userStatus;
@@ -47,8 +45,8 @@ public class User extends BaseEntity {
     }
 
     //팩토리 메소드 사용
-    public static User of(String userId, String userName, String password, UserStatus userStatus, UserRole userRole) { // ✅ UserRole을 직접 받도록 수정
-        return new User(userId, userName, password, userStatus, userRole);
+    public static User of(String loginId, String userName, String password, UserStatus userStatus, UserRole userRole) { // ✅ UserRole을 직접 받도록 수정
+        return new User(loginId, userName, password, userStatus, userRole);
     }
 
     // 포인트 업데이트

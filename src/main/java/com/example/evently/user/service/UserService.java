@@ -17,25 +17,25 @@ public class UserService {
 
     /**
      * 사용자 정보 조회
-     * @param userId
+     * @param loginId
      * @return
      */
     @Transactional(readOnly = true)
-    public UserResponseDto findByUserId(String userId) {
-        User user = userRepository.findByUserId(userId).orElseThrow(()-> new IllegalArgumentException("정보를 찾을 수 없습니다 : " + userId));
+    public UserResponseDto findByUserId(String loginId) {
+        User user = userRepository.findByLoginId(loginId).orElseThrow(()-> new IllegalArgumentException("정보를 찾을 수 없습니다 : " + loginId));
         return UserResponseDto.fromEntity(user);
     }
 
 
     /**
      * 사용자 정보 수정
-     * @param userId
+     * @param loginId
      * @param requestDto
      * @return
      */
     @Transactional
-    public UserResponseDto updateUser(String userId, UserRequestDto requestDto) {
-        User user = userRepository.findByUserId(userId).orElseThrow(()-> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다 : " + userId));
+    public UserResponseDto updateUser(String loginId, UserRequestDto requestDto) {
+        User user = userRepository.findByLoginId(loginId).orElseThrow(()-> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다 : " + loginId));
         user.updateUser(
                 requestDto.userName(),
                 requestDto.password()
@@ -45,12 +45,12 @@ public class UserService {
 
     /**
      * 사용자 탈퇴
-     * @param userId
+     * @param loginId
      */
     @Transactional
-    public void softDeleteUser(String userId) {
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(()->new IllegalArgumentException("회원정보를 찾을 수 없습니다. :" + userId));
+    public void softDeleteUser(String loginId) {
+        User user = userRepository.findByLoginId(loginId)
+                .orElseThrow(()->new IllegalArgumentException("회원정보를 찾을 수 없습니다. :" + loginId));
         user.softDelete();
     }
 

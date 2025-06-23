@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS event (
 
 CREATE TABLE IF NOT EXISTS users (
                                                     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                                    user_id VARCHAR(100) NOT NULL UNIQUE,
+                                                    login_id  VARCHAR(100) NOT NULL UNIQUE,
                                                     user_name VARCHAR(100) NOT NULL,
                                                     password VARCHAR(100) NOT NULL,
                                                     points INT NOT NULL DEFAULT 0,
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS event_participation  (
                                                     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                                    user_sn BIGINT,
+                                                    user_id BIGINT,
                                                     event_id BIGINT,
                                                     reg_date TIMESTAMP NOT NULL ,
                                                     chg_date TIMESTAMP NOT NULL
@@ -38,9 +38,19 @@ CREATE TABLE IF NOT EXISTS event_participation  (
 
 CREATE TABLE IF NOT EXISTS point_history  (
                                                     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                                    user_sn BIGINT,
+                                                    user_id BIGINT,
                                                     event_id BIGINT,
                                                     points INT NOT NULL DEFAULT 0,
                                                     reason VARCHAR(150) NOT NULL ,
                                                     created_at TIMESTAMP NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS event_reward_history (
+                                                    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                                    user_id BIGINT NOT NULL,
+                                                    event_id BIGINT NOT NULL,
+                                                    reward_type VARCHAR(50) NOT NULL,      -- 예: FIRST_COME, DRAW, INSTANT
+                                                    reward_item VARCHAR(150),              -- 예: "CU 3천원 쿠폰", "에어팟", "500포인트"
+                                                    reward_status VARCHAR(30) NOT NULL,    -- 예: WIN, LOSE, PENDING
+                                                    created_at TIMESTAMP NOT NULL
+    );

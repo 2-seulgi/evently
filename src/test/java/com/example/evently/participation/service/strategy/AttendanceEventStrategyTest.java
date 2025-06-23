@@ -14,9 +14,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.redisson.api.RedissonClient;
 import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
@@ -48,6 +49,9 @@ class AttendanceEventStrategyTest {
     @Mock
     private RLock lock;
 
+    @Mock
+    private ValueOperations<String, Object> valueOperations;
+
     private Event event;
     private User user;
 
@@ -56,6 +60,8 @@ class AttendanceEventStrategyTest {
         event = Event.of("출석", "출석이벤트", LocalDateTime.now(), LocalDateTime.now().plusDays(1), 100, EventType.CHECKIN);
         user = User.of("testId", "테스터", "pw123", UserStatus.ACTIVE, UserRole.USER);
         lenient().when(redissonClient.getLock(anyString())).thenReturn(lock);
+        lenient().when(redisTemplate.opsForValue()).thenReturn(valueOperations);  // redisTemplate이 opsForValue()를 호출하면, 가짜 ValueOperations 줌
+        lenient().when(valueOperations.increment(anyString())).thenReturn(1L); // 그 다음에 increment() 호출되면 1L 리턴
     }
 
     @Test
@@ -90,7 +96,7 @@ class AttendanceEventStrategyTest {
                 any(), any(), any(), any()
         )).willReturn(false); // 1일 1회 출석체크 - 아직 출석 안함
         given(lock.tryLock(0, 5, TimeUnit.SECONDS)).willReturn(true); // 락 획득 성공
-        // 락 해제 조건
+        // 락 해제 조건(락을 내가 보유함)
         given(lock.isHeldByCurrentThread()).willReturn(true);
 
         // when
@@ -98,10 +104,11 @@ class AttendanceEventStrategyTest {
 
         // then
         assertThat(point).isEqualTo(event.getPointReward());
-        verify(participationRepository).save(any(EventParticipation.class));
+        verify(participationRepository).save(any(EventParticipation.class)); // 이벤트 참여 검증
+        verify(redisTemplate.opsForValue()).increment(anyString()); // 참여자 수 증가 검증
         verify(pointService).earnPoints(eq(user), eq(event), eq(point), anyString());
-        verify(lock).lock();
-
+        verify(lock).tryLock(0, 5, TimeUnit.SECONDS);
+        verify(lock).unlock(); // 락 해제
     }
 
 

@@ -6,14 +6,14 @@ import java.time.LocalDateTime;
 
 /**
  * 관리자용 이벤트별 참여자 조회 (유저를 기준으로 참여 정보 제공)
- * @param userSn
+ * @param userId
  * @param userName
  * @param regDate
  */
 @Schema(description = "이벤트 참여자 응답 DTO (관리자용)")
 public record EventParticipantResponseDto(
         @Schema(description = "사용자 식별자(PK)", example = "101")
-        Long userSn,
+        Long userId,
 
         @Schema(description = "사용자 이름", example = "홍길동")
         String userName,
