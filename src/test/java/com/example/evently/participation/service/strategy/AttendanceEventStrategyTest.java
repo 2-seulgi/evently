@@ -57,7 +57,7 @@ class AttendanceEventStrategyTest {
 
     @BeforeEach
     void setup() {
-        event = Event.of("출석", "출석이벤트", LocalDateTime.now(), LocalDateTime.now().plusDays(1), 100, EventType.CHECKIN);
+        event = Event.of("출석체크 이벤트", "6월 출석체크 이벤트", LocalDateTime.now(), LocalDateTime.now().plusDays(1), 10, EventType.CHECKIN, null);
         user = User.of("testId", "테스터", "pw123", UserStatus.ACTIVE, UserRole.USER);
         lenient().when(redissonClient.getLock(anyString())).thenReturn(lock);
         lenient().when(redisTemplate.opsForValue()).thenReturn(valueOperations);  // redisTemplate이 opsForValue()를 호출하면, 가짜 ValueOperations 줌
@@ -110,8 +110,5 @@ class AttendanceEventStrategyTest {
         verify(lock).tryLock(0, 5, TimeUnit.SECONDS);
         verify(lock).unlock(); // 락 해제
     }
-
-
-
 
 }

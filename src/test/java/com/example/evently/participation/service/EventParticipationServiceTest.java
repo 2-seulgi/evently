@@ -2,6 +2,7 @@ package com.example.evently.participation.service;
 
 import com.example.evently.event.domain.Event;
 import com.example.evently.event.domain.enums.EventType;
+import com.example.evently.event.domain.enums.RewardType;
 import com.example.evently.event.repository.EventRepository;
 import com.example.evently.participation.domain.EventParticipation;
 import com.example.evently.participation.dto.EventParticipantResponseDto;
@@ -9,6 +10,7 @@ import com.example.evently.participation.dto.EventParticipationResponseDto;
 import com.example.evently.participation.repository.EventParticipationQueryRepository;
 import com.example.evently.participation.repository.EventParticipationRepository;
 import com.example.evently.participation.service.strategy.AttendanceEventStrategy;
+import com.example.evently.participation.service.strategy.GiveawayEventStrategy;
 import com.example.evently.participation.service.strategy.StrategyFactory;
 import com.example.evently.user.domain.User;
 import com.example.evently.user.domain.enums.UserRole;
@@ -57,16 +59,19 @@ class EventParticipationServiceTest {
     @Mock
     AttendanceEventStrategy attendanceStrategy;
 
+    @Mock
+    GiveawayEventStrategy giveawayStrategy;
+
     private Event event;
     private User user;
     @BeforeEach
     void setup() {
-        event = Event.of("출석체크 이벤트", "6월 출석체크 이벤트", LocalDateTime.now(), LocalDateTime.now().plusDays(1), 10, EventType.CHECKIN);
+        event = Event.of("출석체크 이벤트", "6월 출석체크 이벤트", LocalDateTime.now(), LocalDateTime.now().plusDays(1), 10, EventType.CHECKIN, null);
         ReflectionTestUtils.setField(event, "id", 1L);
         user = User.of("testId", "테스터", "pw123", UserStatus.ACTIVE, UserRole.USER);
     }
 
-/*    @Test
+   @Test
     void 이벤트_참여시_출석전략_위임_및_포인트_지급_확인() {
 
         //given
@@ -76,12 +81,33 @@ class EventParticipationServiceTest {
         given(attendanceStrategy.participate(any(), any())).willReturn(10);
 
         //when
-        int point = eventParticipationService.participateInEvent(1L, 1L);
+        int point = eventParticipationService.participateInEvent(1L, 1L).pointReward();
 
         //then
         verify(attendanceStrategy).participate(eq(event), eq(user)); // 위임 확인
         assertThat(point).isEqualTo(event.getPointReward());         // 포인트 확인
-    }*/
+    }
+
+    @Test
+    void 이벤트_참여시_경품전략_위임_및_포인트_차감_확인(){
+        // given
+        event = Event.of("경품 이벤트", "에어팟 추첨 이벤트",
+                LocalDateTime.now(), LocalDateTime.now().plusDays(3),
+                -50, EventType.GIVEAWAY, RewardType.DRAW);
+        ReflectionTestUtils.setField(event, "id", 2L);
+
+        user.updatePoints(100); // 충분한 포인트 보유
+
+        given(eventRepository.findById(anyLong())).willReturn(Optional.of(event));
+        given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
+        given(strategyFactory.getStrategy(EventType.GIVEAWAY)).willReturn(giveawayStrategy);
+        given(giveawayStrategy.participate(any(), any())).willReturn(-50);
+
+        //when
+        int point = eventParticipationService.participateInEvent(2L, 1L).pointReward();
+        verify(giveawayStrategy).participate(eq(event), eq(user)); // 위임 확인
+        assertThat(point).isEqualTo(event.getPointReward());         // 포인트 확인
+    }
 
     @Test
     void 참석한_이벤트_조회() {
@@ -184,7 +210,6 @@ class EventParticipationServiceTest {
 
         assertThat(result.getContent()).isEmpty();
     }
-
 
     @Test
     void 오늘_출석체크_이벤트ID_조회_성공() {

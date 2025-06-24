@@ -46,14 +46,18 @@ public class Event extends BaseEntity {
     private Event(String title, String description, LocalDateTime startDate,
                   LocalDateTime endDate, int pointReward, EventType eventType, RewardType rewardType) {
         validateEventDates(startDate, endDate);
-        validatePointReward(pointReward);
+
+        // 로컬 변수 먼저 설정
+        this.eventType = eventType;
+        validatePointReward(pointReward, eventType); //  변경
+
         this.title = title;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
         this.pointReward = pointReward;
-        this.eventType = eventType;
         this.rewardType = rewardType;
+
     }
 
     // 팩토리 메소드 추가
@@ -66,7 +70,7 @@ public class Event extends BaseEntity {
     public void updateEvent(String title, String description, LocalDateTime startDate,
                             LocalDateTime endDate, int pointReward, EventType eventType, RewardType rewardType)  {
         validateEventDates(startDate, endDate);
-        validatePointReward(pointReward);
+        validatePointReward(pointReward, eventType); // ✅ 변경
         this.title = title;
         this.description = description;
         this.startDate = startDate;
@@ -87,8 +91,9 @@ public class Event extends BaseEntity {
     }
 
     // 포인트 유효성 검증
-    private void validatePointReward(int pointReward) {
-        if (pointReward < 0) {
+    private void validatePointReward(int pointReward, EventType eventType) {
+        // 경품 이벤트(GIVEAWAY)는 음수 포인트 허용
+        if (eventType != EventType.GIVEAWAY && pointReward < 0) {
             throw new IllegalArgumentException("포인트는 0보다 작을 수 없습니다.");
         }
     }
