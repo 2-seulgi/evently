@@ -1,6 +1,7 @@
 package com.example.evently.event.dto;
 
 import com.example.evently.event.domain.enums.EventType;
+import com.example.evently.event.domain.enums.RewardType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
@@ -31,7 +32,9 @@ public record EventRequestDto (
 
         @Schema(description = "이벤트 유형", example = "CHECKIN")
         @NotNull(message = "이벤트 유형은 필수입니다.")
-        EventType eventType
+        EventType eventType,
+
+        @Schema(description = "보상 유형", example = "CHECKIN") RewardType rewardType
 )
 {
 

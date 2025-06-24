@@ -2,6 +2,7 @@ package com.example.evently.participation.controller;
 
 import com.example.evently.auth.CustomUserDetails;
 import com.example.evently.participation.dto.EventParticipationResponseDto;
+import com.example.evently.participation.dto.ParticipationResponseDto;
 import com.example.evently.participation.service.EventParticipationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -66,11 +67,13 @@ public class EventParticipationController {
             @PathVariable Long eventSn,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        int pointReward = eventParticipationService.participateInEvent(eventSn, userDetails.getUser().getId());
+        ParticipationResponseDto responseDto   = eventParticipationService.participateInEvent(eventSn, userDetails.getUser().getId());
 
         return ResponseEntity.ok(Map.of(
                 "msgCd", "Success",
-                "pointReward", pointReward
+                "pointReward", responseDto.pointReward(),
+                "eventType", responseDto.eventType().name(),
+                "rewardType", responseDto.rewardType() != null ? responseDto.rewardType().name() : null
         ));
     }
 

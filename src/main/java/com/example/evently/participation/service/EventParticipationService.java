@@ -6,6 +6,7 @@ import com.example.evently.event.repository.EventRepository;
 import com.example.evently.participation.domain.EventParticipation;
 import com.example.evently.participation.dto.EventParticipantResponseDto;
 import com.example.evently.participation.dto.EventParticipationResponseDto;
+import com.example.evently.participation.dto.ParticipationResponseDto;
 import com.example.evently.participation.repository.EventParticipationQueryRepository;
 import com.example.evently.participation.repository.EventParticipationRepository;
 import com.example.evently.participation.service.strategy.ParticipationStrategy;
@@ -40,14 +41,20 @@ public class EventParticipationService {
      * @return
      */
     @Transactional
-    public int participateInEvent(Long eventId, Long userId) {
+    public ParticipationResponseDto participateInEvent(Long eventId, Long userId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(()->new IllegalArgumentException("이벤트를 찾을 수 없습니다."));
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
         // 이벤트 타입에 따라 전략 선택 후 참여 로직을 위임함
         ParticipationStrategy strategy = strategyFactory.getStrategy(event.getEventType());
-        return strategy.participate(event, user);
+        int pointReward = strategy.participate(event, user);
+
+        return new ParticipationResponseDto(
+                pointReward,
+                event.getEventType(),
+                event.getRewardType()
+        );
     }
 
     /**

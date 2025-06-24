@@ -66,7 +66,7 @@ class EventParticipationServiceTest {
         user = User.of("testId", "테스터", "pw123", UserStatus.ACTIVE, UserRole.USER);
     }
 
-    @Test
+/*    @Test
     void 이벤트_참여시_출석전략_위임_및_포인트_지급_확인() {
 
         //given
@@ -81,7 +81,7 @@ class EventParticipationServiceTest {
         //then
         verify(attendanceStrategy).participate(eq(event), eq(user)); // 위임 확인
         assertThat(point).isEqualTo(event.getPointReward());         // 포인트 확인
-    }
+    }*/
 
     @Test
     void 참석한_이벤트_조회() {

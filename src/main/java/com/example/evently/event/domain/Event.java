@@ -1,9 +1,12 @@
 package com.example.evently.event.domain;
 
 import com.example.evently.event.domain.enums.EventType;
+import com.example.evently.event.domain.enums.RewardType;
 import com.example.evently.global.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -32,13 +35,16 @@ public class Event extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name ="event_type", nullable = false, length = 20)
     private EventType eventType;
+    @Enumerated(EnumType.STRING)
+    @Column(name ="reward_type", nullable = false, length = 20)
+    private RewardType rewardType;
     @Column(name ="is_deleted",nullable = false)
     private boolean isDeleted = false; //  삭제 여부 (Soft Delete)
 
     /** 객체 생성을 직접 제어 하기 위해 생성자 + 팩토리 메소드 사용( 유효성 검증 포함) **/
     // 생성자
     private Event(String title, String description, LocalDateTime startDate,
-                  LocalDateTime endDate, int pointReward, EventType eventType) {
+                  LocalDateTime endDate, int pointReward, EventType eventType, RewardType rewardType) {
         validateEventDates(startDate, endDate);
         validatePointReward(pointReward);
         this.title = title;
@@ -47,17 +53,18 @@ public class Event extends BaseEntity {
         this.endDate = endDate;
         this.pointReward = pointReward;
         this.eventType = eventType;
+        this.rewardType = rewardType;
     }
 
     // 팩토리 메소드 추가
     public static Event of(String title, String description, LocalDateTime startDate,
-                           LocalDateTime endDate, int pointReward, EventType eventType) {
-        return new Event(title, description, startDate, endDate, pointReward, eventType);
+                           LocalDateTime endDate, int pointReward, EventType eventType, RewardType rewardType) {
+        return new Event(title, description, startDate, endDate, pointReward, eventType, rewardType);
     }
 
     // 이벤트 수정
     public void updateEvent(String title, String description, LocalDateTime startDate,
-                            LocalDateTime endDate, int pointReward) {
+                            LocalDateTime endDate, int pointReward, EventType eventType, RewardType rewardType)  {
         validateEventDates(startDate, endDate);
         validatePointReward(pointReward);
         this.title = title;
@@ -65,6 +72,8 @@ public class Event extends BaseEntity {
         this.startDate = startDate;
         this.endDate = endDate;
         this.pointReward = pointReward ;
+        this.eventType = eventType;
+        this.rewardType = rewardType;
     }
 
     // 이벤트 날짜 유효성 검증

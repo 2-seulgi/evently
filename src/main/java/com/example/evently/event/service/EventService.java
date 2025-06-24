@@ -36,7 +36,8 @@ public class EventService {
                 requestDto.startDate(),
                 requestDto.endDate(),
                 requestDto.pointReward(),
-                requestDto.eventType()
+                requestDto.eventType(),
+                requestDto.rewardType()
         );
 
         Event savedEvent = eventRepository.save(event);
@@ -97,7 +98,9 @@ public class EventService {
                 requestDto.description(),
                 requestDto.startDate(),
                 requestDto.endDate(),
-                requestDto.pointReward()
+                requestDto.pointReward(),
+                requestDto.eventType(),
+                requestDto.rewardType()
         );
         return EventResponseDto.fromEntity(event);
     }

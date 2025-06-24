@@ -34,6 +34,14 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(ex.getMessage())); // 예외 메시지 그대로 반환
     }
 
+    // ✅ IllegalStateException 처리
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalStateException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(ex.getMessage())); // 예외 메시지 그대로 반환
+    }
+
     // ✅ 기타 예상하지 못한 예외 처리 (디버깅을 위해 추가)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneralException(Exception ex) {

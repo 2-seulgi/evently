@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS event (
                                                     point_reward INT NOT NULL,
                                                     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
                                                     event_type VARCHAR(20) NOT NULL,
-                                                    reward_type VARCHAR(20) NOT NULL,
+                                                    reward_type VARCHAR(20) ,
                                                     max_participants INT,
                                                     current_participants INT NOT NULL,
                                                     reg_date TIMESTAMP NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS users (
                                                     is_use BOOLEAN NOT NULL,
                                                     reg_date TIMESTAMP NOT NULL ,
                                                     chg_date TIMESTAMP NOT NULL,
-                                                    withdrawal_dt TIMESTAMP NOT NULL
+                                                    withdrawal_dt  NULL DEFAULT NULL
     );
 
 CREATE TABLE IF NOT EXISTS event_participation  (
