@@ -57,3 +57,12 @@ CREATE TABLE IF NOT EXISTS event_reward_histories  (
                                                     reg_date TIMESTAMP NOT NULL,
                                                     chg_date TIMESTAMP NOT NULL
     );
+
+CREATE TABLE event_reward_item (
+                                   id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                   event_id BIGINT NOT NULL,
+                                   reward_name VARCHAR(100) NOT NULL,       -- 예: "에어팟", "CU 3천원 쿠폰"
+                                   quantity INT NOT NULL,                   -- 보상 개수
+                                   probability FLOAT,                       -- 확률 (optional)
+                                   reward_type VARCHAR(20) NOT NULL         -- 예: POINT, ITEM
+);

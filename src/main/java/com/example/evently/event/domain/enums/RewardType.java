@@ -6,9 +6,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum RewardType {
-    FIRST_COME("선착순"),
+    FIRST_COME_FIRST_SERVED ("선착순"),
     DRAW("랜덤"),
-    INSTANT ("즉시 당첨");
+    INSTANT_WIN ("즉시 당첨");
     private final String description;
 
     @JsonCreator

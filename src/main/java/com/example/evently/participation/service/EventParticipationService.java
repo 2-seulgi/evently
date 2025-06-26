@@ -11,6 +11,8 @@ import com.example.evently.participation.repository.EventParticipationQueryRepos
 import com.example.evently.participation.repository.EventParticipationRepository;
 import com.example.evently.participation.service.strategy.ParticipationStrategy;
 import com.example.evently.participation.service.strategy.StrategyFactory;
+import com.example.evently.reward.dto.RewardResult;
+import com.example.evently.reward.service.strategy.EventRewardItemService;
 import com.example.evently.user.domain.User;
 import com.example.evently.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -33,6 +35,7 @@ public class EventParticipationService {
 
     private final EventParticipationRepository eventParticipationRepository;
     private final EventParticipationQueryRepository eventParticipationQueryRepository;
+    private final EventRewardItemService eventRewardItemService;
 
     /**
      * 이벤트 참가
@@ -49,11 +52,13 @@ public class EventParticipationService {
         // 이벤트 타입에 따라 전략 선택 후 참여 로직을 위임함
         ParticipationStrategy strategy = strategyFactory.getStrategy(event.getEventType());
         int pointReward = strategy.participate(event, user);
+        RewardResult rewardResult = eventRewardItemService.reward(event, user); // 즉시당첨/선착순일 경우만 의미 있음
 
         return new ParticipationResponseDto(
                 pointReward,
                 event.getEventType(),
-                event.getRewardType()
+                event.getRewardType(),
+                rewardResult // ✨ 보상 결과 추가
         );
     }
 

@@ -59,7 +59,7 @@
     point_reward INT
     is_deleted BOOLEAN [default: false]
     event_type VARCHAR(20)  [note: 'SURVEY, QUIZ, GIVEAWAY, CHECKIN, OTHER']
-    reward_type VARCHAR(20)  [note: 'FIRST_COME, DRAW, INSTANT']
+    reward_type VARCHAR(20)  [note: 'FIRST_COME_FIRST_SERVED, DRAW, INSTANT_WIN']
     max_participants INT
     current_participants INT
     reg_date TIMESTAMP

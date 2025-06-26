@@ -37,7 +37,7 @@ public class Event extends BaseEntity {
     private EventType eventType;
     @Enumerated(EnumType.STRING)
     @Column(name ="reward_type", nullable = false, length = 20)
-    private RewardType rewardType;
+    private RewardType rewardType; // FIRST_COME_FIRST_SERVED, DRAW, INSTANT_WIN
     @Column(name ="is_deleted",nullable = false)
     private boolean isDeleted = false; //  삭제 여부 (Soft Delete)
 

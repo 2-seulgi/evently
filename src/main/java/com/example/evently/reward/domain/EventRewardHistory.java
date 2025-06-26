@@ -10,6 +10,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Table(name="event_reward_history")
@@ -32,7 +34,36 @@ public class EventRewardHistory  extends BaseEntity {
     @Column(name ="reward_type", nullable = false, length = 20)
     private RewardType rewardType;
 
+    @Column(name = "reward_item", length = 150)
+    private String rewardItem;
+
     @Enumerated(EnumType.STRING)
     @Column(name ="reward_status", nullable = false, length = 20)
-    private RewardStatus rewardStatus;
+    private RewardStatus rewardStatus; // WIN, LOSE, PENDING 등
+
+    @Column(name = "reg_date", nullable = false)
+    private LocalDateTime regDate;
+
+    @Column(name = "chg_date", nullable = false)
+    private LocalDateTime chgDate;
+
+    public static EventRewardHistory of(Event event, User user,
+                                        RewardType rewardType,
+                                        String rewardItem,
+                                        RewardStatus rewardStatus) {
+        EventRewardHistory history = new EventRewardHistory();
+        history.user = user;
+        history.event = event;
+        history.rewardType = rewardType;
+        history.rewardItem = rewardItem;
+        history.rewardStatus = rewardStatus;
+        history.regDate = LocalDateTime.now();
+        history.chgDate = LocalDateTime.now();
+        return history;
+    }
+
+    public void updateRewardStatus(RewardStatus newStatus) {
+        this.rewardStatus = newStatus;
+        this.chgDate = LocalDateTime.now();
+    }
 }
