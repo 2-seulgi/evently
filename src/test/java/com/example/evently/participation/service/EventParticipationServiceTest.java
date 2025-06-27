@@ -7,11 +7,15 @@ import com.example.evently.event.repository.EventRepository;
 import com.example.evently.participation.domain.EventParticipation;
 import com.example.evently.participation.dto.EventParticipantResponseDto;
 import com.example.evently.participation.dto.EventParticipationResponseDto;
+import com.example.evently.participation.dto.ParticipationResponseDto;
 import com.example.evently.participation.repository.EventParticipationQueryRepository;
 import com.example.evently.participation.repository.EventParticipationRepository;
 import com.example.evently.participation.service.strategy.AttendanceEventStrategy;
 import com.example.evently.participation.service.strategy.GiveawayEventStrategy;
 import com.example.evently.participation.service.strategy.StrategyFactory;
+import com.example.evently.reward.dto.RewardResult;
+import com.example.evently.reward.service.strategy.EventRewardItemService;
+import com.example.evently.reward.service.strategy.InstantWinRewardStrategy;
 import com.example.evently.user.domain.User;
 import com.example.evently.user.domain.enums.UserRole;
 import com.example.evently.user.domain.enums.UserStatus;
@@ -52,6 +56,12 @@ class EventParticipationServiceTest {
 
     @Mock
     private EventParticipationQueryRepository eventParticipationQueryRepository;
+
+    @Mock
+    private EventRewardItemService eventRewardItemService;
+
+    @Mock
+    InstantWinRewardStrategy instantWinRewardStrategy;
 
     @Mock
     private StrategyFactory strategyFactory;
@@ -110,6 +120,32 @@ class EventParticipationServiceTest {
     }
 
     @Test
+    void 이벤트_참여시_즉시당첨_보상서비스_위임_및_응답_확인(){
+        //given
+        event = Event.of("즉시 당첨 이벤트", "확률로 당첨이 결정됩니다.",
+                LocalDateTime.now(), LocalDateTime.now().plusDays(1),
+                -50, EventType.GIVEAWAY, RewardType.INSTANT_WIN);
+        ReflectionTestUtils.setField(event, "id", 3L);
+
+        RewardResult rewardResult = RewardResult.win("에어팟");
+
+        given(eventRepository.findById(anyLong())).willReturn(Optional.of(event));
+        given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
+        given(strategyFactory.getStrategy(EventType.GIVEAWAY)).willReturn(giveawayStrategy);
+        given(giveawayStrategy.participate(any(), any())).willReturn(-50);
+        given(eventRewardItemService.reward(eq(event), eq(user))).willReturn(rewardResult);
+
+        // when
+        ParticipationResponseDto responseDto = eventParticipationService.participateInEvent(3L,1L);
+
+        // then
+        verify(strategyFactory).getStrategy(EventType.GIVEAWAY); // 전략 선택 확인
+        verify(giveawayStrategy).participate(eq(event), eq(user)); // 전략 실행 확인
+        verify(eventRewardItemService).reward(eq(event), eq(user)); // 보상 위임 확인
+        assertThat(responseDto.rewardResult()).isEqualTo(rewardResult); // 응답 값 검증
+    }
+
+    @Test
     void 참석한_이벤트_조회() {
 
         //given
@@ -154,11 +190,6 @@ class EventParticipationServiceTest {
                 eq(1L), anyString(), any(), any(), eq(pageable));
 
     }
-
-/*    @Test
-    void 존재하지_않는_이벤트일_경우_예외(){
-        given (eventRepository.findById(anyLong())).willReturn(Optional.empty());
-    }*/
 
     @Test
     void 이벤트별_참가자_조회() {
