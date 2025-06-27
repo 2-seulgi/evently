@@ -34,8 +34,8 @@ public class EventRewardHistory  extends BaseEntity {
     @Column(name ="reward_type", nullable = false, length = 20)
     private RewardType rewardType;
 
-    @Column(name = "reward_item", length = 150)
-    private String rewardItem;
+    @Column(name = "reward_name", length = 150)
+    private String rewardName;
 
     @Enumerated(EnumType.STRING)
     @Column(name ="reward_status", nullable = false, length = 20)
@@ -49,13 +49,13 @@ public class EventRewardHistory  extends BaseEntity {
 
     public static EventRewardHistory of(Event event, User user,
                                         RewardType rewardType,
-                                        String rewardItem,
+                                        String rewardName,
                                         RewardStatus rewardStatus) {
         EventRewardHistory history = new EventRewardHistory();
         history.user = user;
         history.event = event;
         history.rewardType = rewardType;
-        history.rewardItem = rewardItem;
+        history.rewardName = rewardName;
         history.rewardStatus = rewardStatus;
         history.regDate = LocalDateTime.now();
         history.chgDate = LocalDateTime.now();

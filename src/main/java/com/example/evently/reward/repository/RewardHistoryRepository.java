@@ -8,4 +8,6 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 public interface RewardHistoryRepository extends JpaRepository<EventRewardHistory, Long>, QuerydslPredicateExecutor<EventRewardHistory> {
     boolean existsByEventAndUser(Event event, User user);
+
+    int countByEventAndRewardName(Event event, String rewardName);
 }

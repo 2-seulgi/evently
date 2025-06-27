@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS event_reward_histories  (
                                                     user_id BIGINT NOT NULL,
                                                     event_id BIGINT NOT NULL,
                                                     reward_type VARCHAR(20) NOT NULL,      -- 예: FIRST_COME, DRAW, INSTANT
-                                                    reward_item VARCHAR(150),              -- 예: "CU 3천원 쿠폰", "에어팟", "500포인트"
+                                                    reward_name VARCHAR(100),              -- 예: "CU 3천원 쿠폰", "에어팟", "500포인트"
                                                     reward_status VARCHAR(30) NOT NULL,    -- 예: WIN, LOSE, PENDING
                                                     reg_date TIMESTAMP NOT NULL,
                                                     chg_date TIMESTAMP NOT NULL

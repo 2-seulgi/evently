@@ -51,8 +51,14 @@ public class InstantWinRewardStrategy implements RewardStrategy {
             // 꽝 처리
             if (selectedItem == null || !selectedItem.isAvailable()) return RewardResult.lose(null);
 
-            // 수량 차감 + 히스토리 저장
-            selectedItem.decreaseQuantity();
+            // 해당 보상 아이템이 이미 최대 수량만큼 지급되었는지 확인
+            int assignedCount = rewardHistoryRepository.countByEventAndRewardName(event, selectedItem.getRewardName());
+            if (assignedCount >= selectedItem.getQuantity()) {
+                return RewardResult.lose(null); // 수량 초과로 꽝 처리
+            }
+
+            //  히스토리 저장
+            //selectedItem.decreaseQuantity(); // 수량 차감은 제거하고 기존 수량을 보유하기로 함
             EventRewardHistory history = EventRewardHistory.of(
                     event,
                     user,

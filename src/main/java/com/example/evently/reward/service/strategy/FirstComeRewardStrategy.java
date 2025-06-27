@@ -48,9 +48,15 @@ public class FirstComeRewardStrategy implements RewardStrategy {
 
             // 🔒 락 획득 성공했을 때만 이 아래 로직 수행
             List<EventRewardItem> availableItems = rewardItemRepository.findByEventOrderByIdAsc(event);
+
             for (EventRewardItem item : availableItems) {
                 if (item.isAvailable()) {
-                    item.decreaseQuantity(); // 수량 차감
+                    // 해당 보상 아이템이 이미 최대 수량만큼 지급되었는지 확인
+                    int assignedCount = rewardHistoryRepository.countByEventAndRewardName(event, item.getRewardName());
+                    if (assignedCount >= item.getQuantity()) {
+                        return RewardResult.lose(null); // 수량 초과로 꽝 처리
+                    }
+                    //item.decreaseQuantity(); // 수량 차감
 
                     EventRewardHistory history = EventRewardHistory.of(
                             event,

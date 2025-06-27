@@ -18,4 +18,8 @@ public interface EventParticipationRepository extends JpaRepository<EventPartici
     boolean existsByUserAndEventAndRegDateBetween(User user, Event event, LocalDateTime startOfToday, LocalDateTime endOfToday);
 
     List<EventParticipation> findByUserIdAndEvent_EventTypeAndRegDate(Long userId, EventType event_eventType, LocalDateTime regDate);
+
+    boolean existsByEventAndUser(Event event, User user);
+
+    List<EventParticipation> findByEvent(Event event);
 }
