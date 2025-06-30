@@ -51,8 +51,8 @@ class InstantWinRewardStrategyTest {
         User user = User.of("testId", "테스터", "pw123", UserStatus.ACTIVE, UserRole.USER);
 
         List<EventRewardItem> rewardItems = List.of(
-                EventRewardItem.of(event, "호텔숙박권", 1, 0.01f, RewardItemType.COUPON),
-                EventRewardItem.of(event, "에어팟", 3, 0.07f, RewardItemType.COUPON),
+                EventRewardItem.of(event, "호텔숙박권", 1, 0.01f, RewardItemType.ITEM),
+                EventRewardItem.of(event, "에어팟", 3, 0.07f, RewardItemType.ITEM),
                 EventRewardItem.of(event, "포인트", 30, 0.2f, RewardItemType.POINT)
         );
 

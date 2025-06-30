@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
 @RequestMapping("/admin/events")
 @RequiredArgsConstructor
 @Tag(name = "관리자 이벤트 API", description = "관리자 이벤트 생성/ 조회 / 수정 / 삭제 관련 API 입니다 ")
+@PreAuthorize("hasRole('ADMIN')") // 관리자가 아닐 경우 차단
 public class AdminEventController {
     private final EventService eventService;
 

@@ -10,4 +10,6 @@ public interface RewardHistoryRepository extends JpaRepository<EventRewardHistor
     boolean existsByEventAndUser(Event event, User user);
 
     int countByEventAndRewardName(Event event, String rewardName);
+
+    boolean existsByEvent(Event endedDrawEvent);
 }

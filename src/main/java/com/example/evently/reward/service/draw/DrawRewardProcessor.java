@@ -38,6 +38,14 @@ public class DrawRewardProcessor {
                 LocalDateTime.now()
         );
         for(Event endedDrawEvent : endedDrawEvents){
+
+            // 이미 보상이 처리된 이벤트가 있으면 패스
+            boolean alreadyDrawed = rewardHistoryRepository.existsByEvent(endedDrawEvent);
+
+            if(alreadyDrawed){
+                continue;
+            }
+
             // 해당 이벤트에 참여한 모든 유저 조회
             List<EventParticipation> participants = eventParticipationRepository.findByEvent(endedDrawEvent);
 
@@ -53,6 +61,7 @@ public class DrawRewardProcessor {
 
             // 아이템별 당첨자 수령
             for(EventRewardItem rewardItem : rewardItems){
+
                 int winnersNeeded = rewardItem.getQuantity();
                 int winnersAssigned = 0;
                 for(EventParticipation participation : participants){
