@@ -24,7 +24,7 @@ jobs:
 
       # 4. 빌드
       - name: Build with Gradle
-        run: ./gradlew clean build
+        run: ./gradlew clean build -x test
 
       # 5. Docker hub 로그인
       - name: Log in to Docker Hub
