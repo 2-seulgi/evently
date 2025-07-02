@@ -167,3 +167,56 @@
   - ✅ 분산 락 획득 실패 시 예외 처리
   - ✅ 정상 참여 시 포인트 지급 및 참여 저장 로직 호출 확인
   - Redisson Lock 활용 → 락 획득 여부에 따른 흐름 분기 처리
+
+--- 
+
+## 📦 배포
+
+### Docker를 이용한 로컬 실행 방법
+이 프로젝트는 Docker Hub에 올라간 이미지를 기반으로, 코드 클론 없이 바로 실행 가능하도록 구성되어 있습니다.
+
+### ✅ 구성 서비스
+| 서비스 이름     | 설명                    | 포트 |
+|----------------|-------------------------|------|
+| evently-app     | Spring Boot 백엔드 서버 | 8080 |
+| redis          | 캐시/이벤트 제한 처리용 Redis | 6379 |
+
+---
+- 사전 준비 
+  - Docker 및 Docker Compose 설치
+    - sudo apt update
+    - sudo apt install docker.io docker-compose -y
+- 실행방법
+   ```
+  # 1. Docker Hub 에서 이미지 기반으로 컨테이너 실행
+  docker-compose up -d
+  
+  # 2. docker-compose.yml
+  version: "3.8"
+  services:
+  evently-app:
+  image: cooey12/evently:latest
+  ports:
+  - "8080:8080"
+  environment:
+    - SPRING_PROFILES_ACTIVE=prod
+    - SPRING_REDIS_HOST=redis
+    - SPRING_REDIS_PORT=6379
+    depends_on:
+    - redis
+  redis:
+  image: redis:7.2
+  ports:
+  - "6379:6379"
+  
+  # 3. 실행 : docker-compose up -d 
+  
+  # 4. Swagger 확인
+  http://localhost:8080/swagger-ui/index.html
+  
+  # 5. 종료 : docker-compose down
+    ```
+- 💡 Dockerfile, docker-compose.yml이 포함되어 있어 별도 환경 설정 없이 바로 실행 가능합니다.
+- 🔧 기타
+  - JAR 파일은 ./gradlew clean build로 먼저 생성하거나, Dockerfile 내부에서 빌드 자동 수행
+  - Swagger는 JWT 인증을 포함한 모든 API를 테스트할 수 있도록 구성됨
