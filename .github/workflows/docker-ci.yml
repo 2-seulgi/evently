@@ -1,0 +1,47 @@
+name: Build & Push Docker Image
+
+on:
+  push:
+    branches:
+      - main # main 브랜치에 push 될 때만 사용
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      #1.Github Repository 코드 체크아웃
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. JDK 21 설정
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      # 3. Gradle 실행 권한 부여
+      - name: Grant execute permission for Gradle
+        run: chmod + x ./gradlew
+
+      # 4. 빌드
+      - name: Build with Gradle
+        run: ./gradlew clean build
+
+      # 5. Docker hub 로그인
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # 6. Docker 이미지 필드 & 푸시
+      - name: Build and Push Docker Image
+        run: |
+          docker build -t cooey12/evently:latest .
+          docker push cooey12/evently:latest 
+          
+          
+
+
+
+
+
