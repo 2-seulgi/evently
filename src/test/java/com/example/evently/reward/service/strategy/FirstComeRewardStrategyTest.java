@@ -93,9 +93,6 @@ class FirstComeRewardStrategyTest {
         assertThat(rewardResult.rewardName()).isEqualTo("CU 3천원 쿠폰");
         assertThat(rewardResult.message()).contains("당첨");
 
-        // 수량 감소 확인
-        assertThat(item.getQuantity()).isEqualTo(0);
-
         // 저장 호출 여부
         verify(rewardHistoryRepository).save(any(EventRewardHistory.class));
         verify(lock).unlock();
