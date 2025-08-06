@@ -9,9 +9,11 @@ import com.example.evently.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
-
-import org.springframework.stereotype.Service;
+import org.redisson.client.RedisConnectionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,6 +33,7 @@ public class AttendanceEventStrategy implements ParticipationStrategy {
 
     private static final String PARTICIPATION_COUNT_KEY = "event:participants:";
 
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Override
     public int participate(Event event, User user) {
@@ -67,6 +70,9 @@ public class AttendanceEventStrategy implements ParticipationStrategy {
             // 포인트 적립
             pointService.earnPoints(user, event, point, "출석 참여: " + event.getTitle());
             return point;
+        } catch (RedisConnectionException e) {
+            log.error("Redis 연결에 실패했습니다. fallback 처리: {}", e.getMessage());
+            throw new RuntimeException("잠시 후 다시 시도해주세요.");
         } catch (InterruptedException e) {
             throw new RuntimeException("참여 중 오류가 발생했습니다.");
         } finally {

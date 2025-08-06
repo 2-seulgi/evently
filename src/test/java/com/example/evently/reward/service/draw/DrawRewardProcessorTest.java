@@ -84,6 +84,8 @@ class DrawRewardProcessorTest {
                 .user(participantUser)
                 .event(event)
                 .build();
+        given(rewardHistoryRepository.existsByEvent(any(Event.class)))
+                .willReturn(false);
         given(eventRepository.findByEventTypeAndRewardTypeAndEndDateBefore(
                 any(), any(), any()
         )).willReturn(List.of(event)); // 이벤트가 1개 있다고 가정

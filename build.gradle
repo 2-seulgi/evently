@@ -1,7 +1,10 @@
 plugins {
+    id 'org.springframework.boot' version '3.2.3'
+    id 'io.spring.dependency-management' version '1.1.4'
     id 'java'
-    id 'org.springframework.boot' version '3.2.3'  // 버전 수정
-    id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.jetbrains.kotlin.jvm' version '1.9.22'          // ✅ Kotlin 지원
+    id 'org.jetbrains.kotlin.plugin.spring' version '1.9.22' // ✅ Spring과 Kotlin 연동
+    id 'org.jetbrains.kotlin.plugin.jpa' version '1.9.22'    // ✅ JPA Kotlin 사용 시 권장
 }
 
 group = 'com.example'
@@ -34,6 +37,10 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5' // JSON 파싱을 위해 필요
 
+    implementation "org.jetbrains.kotlin:kotlin-reflect"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin" // JSON 직렬화
+
     // ✅ QueryDSL 의존성 추가
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'  // jakarta 추가
     annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta' // jakarta 추가
@@ -48,6 +55,8 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation("org.jetbrains.kotlin:kotlin-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     // H2 Database 추가
     implementation 'com.h2database:h2'
