@@ -2,9 +2,6 @@ plugins {
     id 'org.springframework.boot' version '3.2.3'
     id 'io.spring.dependency-management' version '1.1.4'
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.9.22'          // ✅ Kotlin 지원
-    id 'org.jetbrains.kotlin.plugin.spring' version '1.9.22' // ✅ Spring과 Kotlin 연동
-    id 'org.jetbrains.kotlin.plugin.jpa' version '1.9.22'    // ✅ JPA Kotlin 사용 시 권장
 }
 
 group = 'com.example'
@@ -25,65 +22,71 @@ configurations {
 repositories {
     mavenCentral()
 }
-
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    // --- Spring 기본 ---
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
 
-    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-    implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
-    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5' // JSON 파싱을 위해 필요
+    // --- DB/Migration ---
+    implementation 'org.flywaydb:flyway-core'     // DB 변경 이력 관리(Flyway)
+    runtimeOnly  'com.mysql:mysql-connector-j'     // MySQL 드라이버 (런타임에만 필요)
 
-    implementation "org.jetbrains.kotlin:kotlin-reflect"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation "com.fasterxml.jackson.module:jackson-module-kotlin" // JSON 직렬화
+    // --- Redis / 분산락 ---
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.redisson:redisson-spring-boot-starter:3.22.0'
 
-    // ✅ QueryDSL 의존성 추가
-    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'  // jakarta 추가
-    annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta' // jakarta 추가
-    annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
-    annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
+    // --- JWT (JJWT) ---
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'   // API만 컴파일 타임에
+    runtimeOnly  'io.jsonwebtoken:jjwt-impl:0.11.5'    // 구현체는 런타임에 로딩
+    runtimeOnly  'io.jsonwebtoken:jjwt-jackson:0.11.5' // JSON 직렬화 바인더
 
+    // --- OpenAPI (Swagger UI) ---
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+
+    // --- QueryDSL (Java + Jakarta) ---
+    implementation       'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor  'com.querydsl:querydsl-apt:5.0.0:jakarta'
+    annotationProcessor  'jakarta.annotation:jakarta.annotation-api'
+    annotationProcessor  'jakarta.persistence:jakarta.persistence-api'
+
+    // --- Lombok (선택: Java 보일러플레이트 줄이기) ---
     compileOnly 'org.projectlombok:lombok'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
 
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    // --- 개발 편의 ---
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // --- Test ---
+    testImplementation 'org.springframework.boot:spring-boot-starter-test' // JUnit/Mockito/AssertJ 포함
     testImplementation 'org.springframework.security:spring-security-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
 
-    // H2 Database 추가
-    implementation 'com.h2database:h2'
+    // 통합테스트: Testcontainers (BOM으로 버전 일괄)
+    testImplementation platform('org.testcontainers:testcontainers-bom:1.20.2')
+    testImplementation 'org.testcontainers:mysql'
 
-    // Spring Boot Redis Starter (필수)
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    // Redisson (분산 락 활용)
-    implementation 'org.redisson:redisson-spring-boot-starter:3.22.0'
-    // JSON 직렬화를 위한 Jackson (Redis 캐싱에 필요)
-    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    // 단위 테스트만 H2  testRuntimeOnly로
+    testRuntimeOnly 'com.h2database:h2'
+}
 
-    // JUnit 5 (Jupiter)
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+}
 
-    // Mockito
-    testImplementation 'org.mockito:mockito-core:5.11.0'
-    testImplementation 'org.mockito:mockito-junit-jupiter:5.11.0'
-
-    // AssertJ (선택) → 더 나은 단언문 제공
-    testImplementation 'org.assertj:assertj-core:3.25.3'
-
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+// --- QueryDSL Q클래스 생성 경로(IDE 인식 개선용 ) ---
+def querydslDir = "$buildDir/generated/querydsl"
+sourceSets {
+    main {
+        java {
+            srcDirs += querydslDir
+        }
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {
-    options.annotationProcessorGeneratedSourcesDirectory = file("build/generated/sources/annotationProcessor/java/main")
+    options.annotationProcessorGeneratedSourcesDirectory = file(querydslDir)
 }
 
 test {

@@ -104,4 +104,5 @@ public class EventParticipationService {
                 .distinct()
                 .toList();
     }
+
 }
